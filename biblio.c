@@ -8,6 +8,11 @@
 #include <stdarg.h>
 #include <unistd.h>
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
+
+
 //Definição de Constantes do predio
 #define TAMX 300
 #define TAMZ 400
@@ -27,6 +32,7 @@
 void desenhaPrateleira(double x, double y, double z);
 void desenharCena();
 void desenhaChao();
+void desenhaTeto();
 void desenhaPredio();
 
 //Declaração de Variáveis Globis
@@ -44,7 +50,63 @@ int y_temp=-1; //Armazena posição Y do ponteiro do mouse
 int rotacao = 0; //Controla eixo de rotação do mouse
 int i;//controle do for
 
-/*
+GLuint texID[2]; // IDs das texturas
+
+
+const char *textures[] = {
+    "tijolo.png",
+    "chao-fora.jpeg"
+};
+
+
+
+void loadTexture(const char *filename, GLuint texID) {
+    int w, h, channels; //w*h -> resolu��o da imagem, channels: n. de canais de cor
+    unsigned char *data = stbi_load(filename, &w, &h, &channels, 0); //Carrega a imagem do arquivo
+    if (!data) { //Verifica se imagem foi carregada corretamente
+        printf("Erro ao carregar %s\n", filename);
+        exit(1);
+    }
+    glBindTexture(GL_TEXTURE_2D, texID);//Associa a textura texid �s pr�ximas opera��es do OpenGL envolvendo textura
+    
+    //Efeito "esticar" textura para preencher o pol�gono
+    /*GL_TEXTURE_WRAP_S: eixo horizontal da textura (U).
+	GL_TEXTURE_WRAP_T: eixo vertical da textura (V).
+	GL_CLAMP_TO_EDGE: limita a amostra da textura � borda da imagem (evita �vazamento� de pixels ao redor).*/
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    
+    //Efeito "repetir" textura para preencher o pol�gono
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // Repeti��o no eixo S (horizontal)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); // Repeti��o no eixo T (vertical)
+    
+	//Deixar comentado acima o efeito que N�O for utilizar
+    /*********************/
+    
+    
+    /*GL_TEXTURE_MIN_FILTER: quando a textura for reduzida (minifica��o).
+	GL_TEXTURE_MAG_FILTER: quando a textura for ampliada (magnifica��o).
+	GL_LINEAR: faz interpola��o linear (suaviza os pixels, evita blocos vis�veis)*/
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    GLenum format = (channels == 4) ? GL_RGBA : GL_RGB; //Define o formato da textura de acordo com channels
+    
+	//envia os dados da imagem para a GPU como textura 2D
+	glTexImage2D(GL_TEXTURE_2D, 0, format, w, h, 0, format, GL_UNSIGNED_BYTE, data);
+
+    stbi_image_free(data);//Libera a mem�ria
+}
+
+
+void initTextures() {
+    glGenTextures(2, texID); //gera IDs �nicas para texturas no OpenGL.
+    for (int i = 0; i < 2; i++) {
+        loadTexture(textures[i], texID[i]);
+    }
+}
+
+
 void stroke_output(GLfloat x, GLfloat y, char *format,...)//função para escrever em 3d
 {
     va_list args;
@@ -58,7 +120,7 @@ void stroke_output(GLfloat x, GLfloat y, char *format,...)//função para escrev
         glutStrokeCharacter(GLUT_STROKE_ROMAN, *p);
     glPopMatrix();
 }
-*/
+
 
 // Inicializa parâmetros de rendering
 void Inicializa(void)
@@ -122,12 +184,26 @@ void desenhaPrateleira(double x, double y, double z)
 }
 
 void desenhaChao(){
-    //Chão
+    //Chão dentro
     glColor3ub(150,75,0);
     glPushMatrix();
     glTranslatef(0,0.04,0);
     glScalef(TAMX,0.1,TAMZ);
     glutSolidCube(1);
+    glPopMatrix();
+
+    //Chão fora
+    glPushMatrix();
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, texID[1]);
+    glColor3f(1,1,1);
+    glBegin(GL_QUADS);
+        glTexCoord2f(0,0); glVertex3f(XPORTA,0.4,TAMZ/2);
+        glTexCoord2f(12,0); glVertex3f(XPORTA, 0.4,TAMZ/2 + TAMZ/8);
+        glTexCoord2f(12,12); glVertex3f(TAMX/2,0.4,TAMZ/2 + TAMZ/8);
+        glTexCoord2f(0,12); glVertex3f(TAMX/2,0.4,TAMZ/2);
+    glEnd();
+    glDisable(GL_TEXTURE_2D);
     glPopMatrix();
 
     //Jardim
@@ -139,22 +215,154 @@ void desenhaChao(){
     glPopMatrix();
 }
 
+void desenhaTeto(){
+    //Teto opção 1
+    /*glColor3ub(100,100,100);
+    glPushMatrix();
+    glTranslatef(0,TAMY + TAMY/6,TAMZ/16);
+    glScalef(TAMX,TAMY/3,TAMZ + TAMZ/8);
+    glutSolidCube(1);
+    glPopMatrix();
+    */
 
-
-
-void desenhaPredio(){
-    
-    //Face Frente
-    glColor3f(0.78,0.78,0.78);
+    //Teto opção 2
+    //Teto frente
+    glColor3f(0.5,0.5,0.5);
     glPushMatrix();
     glBegin(GL_QUADS);
-    glVertex3f(-TAMX/2,0,TAMZ/2);
-    glVertex3f(XPORTA,0,TAMZ/2);
-    glVertex3f(XPORTA,TAMY,TAMZ/2);
-    glVertex3f(-TAMX/2,TAMY,TAMZ/2);
+    glVertex3f(-TAMX/2,TAMY,TAMZ/2 + TAMZ/8);
+    glVertex3f(TAMX/2,TAMY,TAMZ/2 + TAMZ/8);
+    glVertex3f(TAMX/2,TAMY + TAMY/3,TAMZ/2 + TAMZ/8);
+    glVertex3f(-TAMX/2,TAMY + TAMY/3,TAMZ/2 + TAMZ/8);
     glEnd();
     glPopMatrix();
 
+    //Teto trás
+    glColor3f(0.5,0.5,0.5);
+    glPushMatrix();
+    glBegin(GL_QUADS);
+    glVertex3f(-TAMX/2,TAMY,-TAMZ/2);
+    glVertex3f(TAMX/2,TAMY,-TAMZ/2);
+    glVertex3f(TAMX/2,TAMY + TAMY/3,-TAMZ/2);
+    glVertex3f(-TAMX/2,TAMY + TAMY/3,-TAMZ/2);
+    glEnd();
+    glPopMatrix();
+
+    //Teto esquerda
+    glColor3f(0.48,0.48,0.48);
+    glPushMatrix();
+    glBegin(GL_QUADS);
+    glVertex3f(-TAMX/2,TAMY,-TAMZ/2);
+    glVertex3f(-TAMX/2,TAMY,TAMZ/2 + TAMZ/8);
+    glVertex3f(-TAMX/2,TAMY + TAMY/3,TAMZ/2 + TAMZ/8);
+    glVertex3f(-TAMX/2,TAMY + TAMY/3,-TAMZ/2);
+    glEnd();
+    glPopMatrix();
+
+
+    //Teto direita
+    glColor3f(0.52,0.52,0.52);
+    glPushMatrix();
+    glBegin(GL_QUADS);
+    glVertex3f(TAMX/2,TAMY,-TAMZ/2);
+    glVertex3f(TAMX/2,TAMY,TAMZ/2 + TAMZ/8);
+    glVertex3f(TAMX/2,TAMY + TAMY/3,TAMZ/2 + TAMZ/8);
+    glVertex3f(TAMX/2,TAMY + TAMY/3,-TAMZ/2);
+    glEnd();
+    glPopMatrix();
+
+    //Teto baixo
+    glColor3f(0.54,0.54,0.54);
+    glPushMatrix();
+    glBegin(GL_QUADS);
+    glVertex3f(-TAMX/2,TAMY,-TAMZ/2);
+    glVertex3f(TAMX/2,TAMY,-TAMZ/2);
+    glVertex3f(TAMX/2,TAMY,TAMZ/2 + TAMZ/8);
+    glVertex3f(-TAMX/2,TAMY,TAMZ/2 + TAMZ/8);
+    glEnd();
+    glPopMatrix();
+
+    //Teto cima
+    glColor3f(0.56,0.56,0.56);
+    glPushMatrix();
+    glBegin(GL_QUADS);
+    glVertex3f(-TAMX/2,TAMY + TAMY/3,-TAMZ/2);
+    glVertex3f(TAMX/2,TAMY + TAMY/3,-TAMZ/2);
+    glVertex3f(TAMX/2,TAMY + TAMY/3,TAMZ/2 + TAMZ/8);
+    glVertex3f(-TAMX/2,TAMY + TAMY/3,TAMZ/2 + TAMZ/8);
+    glEnd();
+    glPopMatrix();
+
+    //Escreve biblioteca    
+    glColor3ub(0,0,0);
+    glPushMatrix();
+    glTranslatef(XPORTA + TAMPORTAX, TAMY + 7, TAMZ/2 + TAMZ/8 + 2);
+    stroke_output(0, 0, "BIBLIOTECA");
+    glPopMatrix();
+    
+
+}
+
+
+void desenhaPredio(){
+
+    //PARTE EXTERNA
+    //Face Frente
+    //F1
+    glPushMatrix();
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, texID[0]);
+    glColor3f(1,1,1);
+    glBegin(GL_QUADS);
+        glTexCoord2f(0,0); glVertex3f(-TAMX/2,0,TAMZ/2);
+        glTexCoord2f(2,0); glVertex3f(XPORTA,0,TAMZ/2);
+        glTexCoord2f(2,1); glVertex3f(XPORTA,TAMY,TAMZ/2);
+        glTexCoord2f(0,1); glVertex3f(-TAMX/2,TAMY,TAMZ/2);
+    glEnd();
+    glDisable(GL_TEXTURE_2D);
+    glPopMatrix();
+
+    //F2
+    glPushMatrix();
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, texID[0]);
+    glColor3f(1,1,1);
+    glBegin(GL_QUADS);
+        glTexCoord2f(0,0); glVertex3f(-TAMX/8,0,TAMZ/2);
+        glTexCoord2f(1,0); glVertex3f(-TAMX/8,0,TAMZ/2 + TAMZ/8);
+        glTexCoord2f(1,1); glVertex3f(-TAMX/8,TAMY,TAMZ/2 + TAMZ/8);
+        glTexCoord2f(0,1); glVertex3f(-TAMX/8,TAMY,TAMZ/2);
+    glEnd();
+    glDisable(GL_TEXTURE_2D);
+    glPopMatrix();
+
+    //F3
+    glPushMatrix();
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, texID[0]);
+    glColor3f(1,1,1);
+    glBegin(GL_QUADS);
+        glTexCoord2f(0,0); glVertex3f(-TAMX/8,0,TAMZ/2 + TAMZ/8);
+        glTexCoord2f(1,0); glVertex3f(XPORTA,0,TAMZ/2 + TAMZ/8);
+        glTexCoord2f(1,1); glVertex3f(XPORTA,TAMY,TAMZ/2 + TAMZ/8);
+        glTexCoord2f(0,1); glVertex3f(-TAMX/8,TAMY,TAMZ/2 + TAMZ/8);
+    glEnd();
+    glDisable(GL_TEXTURE_2D);
+    glPopMatrix();
+
+    //F4
+    glColor3f(0.8,0.8,0.8);
+    glPushMatrix();
+    glBegin(GL_QUADS);
+    glVertex3f(XPORTA,0,TAMZ/2);
+    glVertex3f(XPORTA,0,TAMZ/2 + TAMZ/8);
+    glVertex3f(XPORTA,TAMY,TAMZ/2 + TAMZ/8);
+    glVertex3f(XPORTA,TAMY,TAMZ/2);
+    glEnd();
+    glPopMatrix();
+
+
+    //F5.1
     glColor3f(0.78,0.78,0.78);
     glPushMatrix();
     glBegin(GL_QUADS);
@@ -164,7 +372,7 @@ void desenhaPredio(){
     glVertex3f(TAMX/2,TAMY,TAMZ/2);
     glEnd();
     glPopMatrix();
-
+    //F5.2
     glColor3f(0.78,0.78,0.78);
     glPushMatrix();
     glBegin(GL_QUADS);
@@ -176,26 +384,32 @@ void desenhaPredio(){
     glPopMatrix();
 
     //Face Trás
-    glColor3f(0.68,0.68,0.68);
     glPushMatrix();
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, texID[0]);
+    glColor3f(1,1,1);
     glBegin(GL_QUADS);
-    glVertex3f(-TAMX/2,0,-TAMZ/2);
-    glVertex3f(TAMX/2,0,-TAMZ/2);
-    glVertex3f(TAMX/2,TAMY,-TAMZ/2);
-    glVertex3f(-TAMX/2,TAMY,-TAMZ/2);
+        glTexCoord2f(0,0); glVertex3f(-TAMX/2,0,-TAMZ/2);
+        glTexCoord2f(6,0); glVertex3f(TAMX/2,0,-TAMZ/2);
+        glTexCoord2f(6,1); glVertex3f(TAMX/2,TAMY,-TAMZ/2);
+        glTexCoord2f(0,1); glVertex3f(-TAMX/2,TAMY,-TAMZ/2);
     glEnd();
+    glDisable(GL_TEXTURE_2D);
     glPopMatrix();
 
     //Face Esquerda
     //E1
-    glColor3f(0.73,0.73,0.73);
     glPushMatrix();
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, texID[0]);
+    glColor3f(1,1,1);
     glBegin(GL_QUADS);
-    glVertex3f(-TAMX/2,0,-TAMZ/2);
-    glVertex3f(-TAMX/2,0,-TAMZ/4);
-    glVertex3f(-TAMX/2,TAMY,-TAMZ/4);
-    glVertex3f(-TAMX/2,TAMY,-TAMZ/2);
+        glTexCoord2f(0,0); glVertex3f(-TAMX/2,0,-TAMZ/2);
+        glTexCoord2f(1,0); glVertex3f(-TAMX/2,0,-TAMZ/4);
+        glTexCoord2f(1,1); glVertex3f(-TAMX/2,TAMY,-TAMZ/4);
+        glTexCoord2f(0,1); glVertex3f(-TAMX/2,TAMY,-TAMZ/2);
     glEnd();
+    glDisable(GL_TEXTURE_2D);
     glPopMatrix();
 
     //E2
@@ -255,14 +469,17 @@ void desenhaPredio(){
     glPopMatrix();
 
     //E7
-    glColor3f(0.73,0.73,0.73);
     glPushMatrix();
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, texID[0]);
+    glColor3f(1,1,1);
     glBegin(GL_QUADS);
-    glVertex3f(-TAMX/2,0,-TAMZ/10);
-    glVertex3f(-TAMX/2,0,TAMZ/2);
-    glVertex3f(-TAMX/2,TAMY,TAMZ/2);
-    glVertex3f(-TAMX/2,TAMY,-TAMZ/10);
+        glTexCoord2f(0,0); glVertex3f(-TAMX/2,0,-TAMZ/10);
+        glTexCoord2f(4,0); glVertex3f(-TAMX/2,0,TAMZ/2);
+        glTexCoord2f(4,1); glVertex3f(-TAMX/2,TAMY,TAMZ/2);
+        glTexCoord2f(0,1); glVertex3f(-TAMX/2,TAMY,-TAMZ/10);
     glEnd();
+    glDisable(GL_TEXTURE_2D);
     glPopMatrix();
 
     //Face Direita
@@ -322,6 +539,7 @@ void desenhaPredio(){
     glPopMatrix();
 
     desenhaChao();
+    desenhaTeto();
 }
 
 void desenharCena ()
@@ -338,14 +556,7 @@ void desenharCena ()
     //desenhaPrateleira(0,0,0);
     desenhaPredio();
 
-    /*
-    //TEXTO Exemplo
-    glColor3ub(0,0,0);
-    glPushMatrix();
-    glTranslatef(-35, 41, 40.2);
-    stroke_output(0, 0, "Escrevendo em OpenGL");
-    glPopMatrix();
-    */
+    
   
 }
 
@@ -500,6 +711,7 @@ int main(int argc, char**argv)
     glutInitWindowPosition(10, 10);
     glutCreateWindow("Biblioteca CG");
     Inicializa();
+    initTextures();
     glutDisplayFunc(DISPLAY);
     glutKeyboardFunc(keyboard);
     glutMouseFunc(MOUSE_Button);
