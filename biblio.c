@@ -993,47 +993,11 @@ void desenhaPredio(){
     glPopMatrix();
 
     glPushMatrix();
-    glTranslatef(-TAMX/2,TAMY/2,-TAMZ/10);
+    glTranslatef(-TAMX/2,TAMY/2,-TAMZ/10-1.6);
     corPilar();
     desenhaPilarInterno(3,TAMY,3);
     glPopMatrix();
-/*
-//E5
-glPushMatrix();
-glEnable(GL_TEXTURE_2D);
-glBindTexture(GL_TEXTURE_2D, texID[0]);
-glColor3f(1,1,1);
-glBegin(GL_QUADS);
-    glTexCoord2f(0,0.5); glVertex3f(-TAMX/2 + TAMX/15,0,-TAMZ/7);
-    glTexCoord2f(0,0); glVertex3f(-TAMX/2 + TAMX/15,0,-TAMZ/10);
-    glTexCoord2f(1,0); glVertex3f(-TAMX/2 + TAMX/15,TAMY,-TAMZ/10);
-    glTexCoord2f(1,0.5); glVertex3f(-TAMX/2 + TAMX/15,TAMY,-TAMZ/7);
-glEnd();
-glDisable(GL_TEXTURE_2D);
-glPopMatrix();
-*/
 
-/*
-//E6
-glPushMatrix();
-glEnable(GL_TEXTURE_2D);
-glBindTexture(GL_TEXTURE_2D, texID[0]);
-glColor3f(1,1,1);
-glBegin(GL_QUADS);
-    glTexCoord2f(0,0.5); glVertex3f(-TAMX/2 + TAMX/15,0,-TAMZ/10);
-    glTexCoord2f(0,0); glVertex3f(-TAMX/2,0,-TAMZ/10);
-    glTexCoord2f(1,0); glVertex3f(-TAMX/2,TAMY,-TAMZ/10);
-    glTexCoord2f(1,0.5); glVertex3f(-TAMX/2 + TAMX/15,TAMY,-TAMZ/10);
-glEnd();
-glDisable(GL_TEXTURE_2D);
-glPopMatrix();
-*/
-
-/*
-glPushMatrix();
-desenhaBanheiro();
-glPopMatrix();
-*/
 
     //E7
     glPushMatrix();
@@ -2472,7 +2436,7 @@ void desenhaEntrada(){
 void desenhaBanheiro(float tam_x, float tam_z){
     //Parede esquerda
     glPushMatrix();
-    glColor3f(0.92,0.92,0.92);
+    glColor3f(0.82,0.82,0.82);
     glBegin(GL_QUADS);
         glVertex3f(0, 0, 0);
         glVertex3f(0, 0, -tam_z);
@@ -2482,7 +2446,7 @@ void desenhaBanheiro(float tam_x, float tam_z){
     glPopMatrix();
     //Parede direita
     glPushMatrix();
-    glColor3f(0.88,0.88,0.88);
+    glColor3f(0.75,0.75,0.75);
     glBegin(GL_QUADS);
         glVertex3f(tam_x, 0, 0);
         glVertex3f(tam_x, 0, -tam_z);
@@ -2493,7 +2457,7 @@ void desenhaBanheiro(float tam_x, float tam_z){
 
     //Fundo
     glPushMatrix();
-    glColor3f(0.91,0.91,0.91);
+    glColor3f(0.79,0.79,0.79);
     glBegin(GL_QUADS);
         glVertex3f(0, 0, -tam_z);
         glVertex3f(tam_x, 0, -tam_z);
