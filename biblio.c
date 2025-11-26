@@ -25,13 +25,22 @@
 #define ZJARDIM 130
 
 //Definição de Constantes da porta
-#define TAMPORTAX 60
-#define TAMPORTAY 40
+#define TAMPORTAX 38
+#define TAMPORTAY 50
 #define XPORTA 50 //Posição X do canto esquerdo da porta
 
 //Definição de Constantes das Salas Grandes
 #define TAMSALAGRX 80
 #define TAMSALAGRZ 65
+
+
+//Definição de Constantes da Sala diferentona
+#define TAMSALADIFX 74
+#define TAMSALADIFZ 59
+
+//Definição de Constantes da Sala diferentona
+#define TAMSALAINTX 40
+#define TAMSALAINTZ 40
 
 //Definição de Constantes das Prateleiras
 #define TAMPRAX 
@@ -56,15 +65,20 @@ void janelaAberta(float tam_x, float tam_y);
 void desenhaObjetos();
 void desenhaMesa();
 void desenhaMesaEntrada();
-void desenhaBanheiro();
+void desenhaBanheiro(float tam_x, float tam_z);
 void desenhaMeio();
+void desenhaOeste();
 void desenhaFundoDir();
 void desenhaPredio();
+void salaDif(float tam_x,float tam_z);
 void corPilar();
+void porta();
+void portaVidro(float tam_x, float tam_y);
+void chaoSala(float tam_x, float tam_z);
 
 //Declaração de Variáveis Globis
 int projecao=0; //Variável Lógica para Definir o Tipo de Projeção (Perspectiva ou Ortogonal)
-float posx=TAMX/8, posy=25, posz=TAMZ/2; //Variáveis que definem a posição da câmera
+float posx=XPORTA+TAMPORTAX/2, posy=30, posz=TAMZ/2+40; //Variáveis que definem a posição da câmera
 float oy=30,ox=0,oz=0;         //Variáveis que definem para onde a câmera olha
 int lx=0, ly=1,  lz=0;     //Variáveis que definem o eixo da câmera
 
@@ -232,7 +246,7 @@ void desenhaPrateleira(float tam_x, float tam_y, float tam_z)
 
 void desenhaPilar(float ang, float x, float y, float z){
     glPushMatrix();
-    glColor3f(0.8,0.8,0.8);
+    glColor3ub(87,85,95);
     glTranslatef(x, y, z);
     glRotatef(ang,0,1,0);
     glScalef(20, TAMY, 5);
@@ -495,10 +509,10 @@ void desenhaTeto(){
     glColor3f(0.5,0.5,0.5);
     glPushMatrix();
     glBegin(GL_QUADS);
-    glVertex3f(-TAMX/2,TAMY,TAMZ/2 + TAMZ/8);
+    glVertex3f(-TAMX/2-TAMSALAGRZ+10,TAMY,TAMZ/2 + TAMZ/8);
     glVertex3f(TAMX/2,TAMY,TAMZ/2 + TAMZ/8);
     glVertex3f(TAMX/2,TAMY + TAMY/3,TAMZ/2 + TAMZ/8);
-    glVertex3f(-TAMX/2,TAMY + TAMY/3,TAMZ/2 + TAMZ/8);
+    glVertex3f(-TAMX/2-TAMSALAGRZ+10,TAMY + TAMY/3,TAMZ/2 + TAMZ/8);
     glEnd();
     glPopMatrix();
 
@@ -517,10 +531,10 @@ void desenhaTeto(){
     glColor3f(0.48,0.48,0.48);
     glPushMatrix();
     glBegin(GL_QUADS);
-    glVertex3f(-TAMX/2,TAMY,-TAMZ/2);
-    glVertex3f(-TAMX/2,TAMY,TAMZ/2 + TAMZ/8);
-    glVertex3f(-TAMX/2,TAMY + TAMY/3,TAMZ/2 + TAMZ/8);
-    glVertex3f(-TAMX/2,TAMY + TAMY/3,-TAMZ/2);
+    glVertex3f(-TAMX/2-TAMSALAGRZ+10,TAMY,-TAMZ/2);
+    glVertex3f(-TAMX/2-TAMSALAGRZ+10,TAMY,TAMZ/2 + TAMZ/8);
+    glVertex3f(-TAMX/2-TAMSALAGRZ+10,TAMY + TAMY/3,TAMZ/2 + TAMZ/8);
+    glVertex3f(-TAMX/2-TAMSALAGRZ+10,TAMY + TAMY/3,-TAMZ/2);
     glEnd();
     glPopMatrix();
 
@@ -541,10 +555,10 @@ void desenhaTeto(){
     glColor3f(0.54,0.54,0.54);
     glPushMatrix();
     glBegin(GL_QUADS);
-    glVertex3f(-TAMX/2,TAMY,-TAMZ/2);
+    glVertex3f(-TAMX/2-TAMSALAGRZ+10,TAMY,-TAMZ/2);
     glVertex3f(TAMX/2,TAMY,-TAMZ/2);
     glVertex3f(TAMX/2,TAMY,ZJARDIM - TAMZJARDIM);
-    glVertex3f(-TAMX/2,TAMY,ZJARDIM - TAMZJARDIM);
+    glVertex3f(-TAMX/2-TAMSALAGRZ+10,TAMY,ZJARDIM - TAMZJARDIM);
     glEnd();
     glPopMatrix();
 
@@ -552,10 +566,10 @@ void desenhaTeto(){
     glColor3f(0.54,0.54,0.54);
     glPushMatrix();
     glBegin(GL_QUADS);
-    glVertex3f(-TAMX/2,TAMY,TAMZ/2 + TAMZ/8);
+    glVertex3f(-TAMX/2-TAMSALAGRZ+10,TAMY,TAMZ/2 + TAMZ/8);
     glVertex3f(TAMX/2,TAMY,TAMZ/2 + TAMZ/8);
     glVertex3f(TAMX/2,TAMY,ZJARDIM);
-    glVertex3f(-TAMX/2,TAMY,ZJARDIM);
+    glVertex3f(-TAMX/2-TAMSALAGRZ+10,TAMY,ZJARDIM);
     glEnd();
     glPopMatrix();
     
@@ -574,10 +588,10 @@ void desenhaTeto(){
     glColor3f(0.54,0.54,0.54);
     glPushMatrix();
     glBegin(GL_QUADS);
-    glVertex3f(-TAMX/2,TAMY,ZJARDIM - TAMZJARDIM);
+    glVertex3f(-TAMX/2-TAMSALAGRZ+10,TAMY,ZJARDIM - TAMZJARDIM);
     glVertex3f(XJARDIM,TAMY,ZJARDIM - TAMZJARDIM);
     glVertex3f(XJARDIM,TAMY,ZJARDIM);
-    glVertex3f(-TAMX/2,TAMY,ZJARDIM);
+    glVertex3f(-TAMX/2-TAMSALAGRZ+10,TAMY,ZJARDIM);
     glEnd();
     glPopMatrix();
 
@@ -587,10 +601,10 @@ void desenhaTeto(){
     glColor3f(0.54,0.54,0.54);
     glPushMatrix();
     glBegin(GL_QUADS);
-    glVertex3f(-TAMX/2,TAMY + TAMY/3,-TAMZ/2);
+    glVertex3f(-TAMX/2-TAMSALAGRZ+10,TAMY + TAMY/3,-TAMZ/2);
     glVertex3f(TAMX/2,TAMY + TAMY/3,-TAMZ/2);
     glVertex3f(TAMX/2,TAMY + TAMY/3,ZJARDIM - TAMZJARDIM);
-    glVertex3f(-TAMX/2,TAMY + TAMY/3,ZJARDIM - TAMZJARDIM);
+    glVertex3f(-TAMX/2-TAMSALAGRZ+10,TAMY + TAMY/3,ZJARDIM - TAMZJARDIM);
     glEnd();
     glPopMatrix();
 
@@ -598,10 +612,10 @@ void desenhaTeto(){
     glColor3f(0.54,0.54,0.54);
     glPushMatrix();
     glBegin(GL_QUADS);
-    glVertex3f(-TAMX/2,TAMY + TAMY/3,TAMZ/2 + TAMZ/8);
+    glVertex3f(-TAMX/2-TAMSALAGRZ+10,TAMY + TAMY/3,TAMZ/2 + TAMZ/8);
     glVertex3f(TAMX/2,TAMY + TAMY/3,TAMZ/2 + TAMZ/8);
     glVertex3f(TAMX/2,TAMY + TAMY/3,ZJARDIM);
-    glVertex3f(-TAMX/2,TAMY + TAMY/3,ZJARDIM);
+    glVertex3f(-TAMX/2-TAMSALAGRZ+10,TAMY + TAMY/3,ZJARDIM);
     glEnd();
     glPopMatrix();
     
@@ -620,10 +634,10 @@ void desenhaTeto(){
     glColor3f(0.54,0.54,0.54);
     glPushMatrix();
     glBegin(GL_QUADS);
-    glVertex3f(-TAMX/2,TAMY + TAMY/3,ZJARDIM - TAMZJARDIM);
+    glVertex3f(-TAMX/2-TAMSALAGRZ+10,TAMY + TAMY/3,ZJARDIM - TAMZJARDIM);
     glVertex3f(XJARDIM,TAMY + TAMY/3,ZJARDIM - TAMZJARDIM);
     glVertex3f(XJARDIM,TAMY + TAMY/3,ZJARDIM);
-    glVertex3f(-TAMX/2,TAMY + TAMY/3,ZJARDIM);
+    glVertex3f(-TAMX/2-TAMSALAGRZ+10,TAMY + TAMY/3,ZJARDIM);
     glEnd();
     glPopMatrix();
     
@@ -685,82 +699,23 @@ void desenhaTeto(){
 void desenhaPredio(){
 
    
-    //SALA SUDOESTE
-    //F1 sala sudoeste
-    glPushMatrix();
-    //glEnable(GL_TEXTURE_2D);
-    //glBindTexture(GL_TEXTURE_2D, texID[0]);
-    glColor3f(1,1,1);
-    glBegin(GL_QUADS);
-        //glTexCoord2f(0,0);
-         glVertex3f(-TAMX/2,0,TAMZ/2.5);
-        //glTexCoord2f(2,0);
-         glVertex3f(-TAMX/2.3,0,TAMZ/2.5);
-        //glTexCoord2f(2,1);
-         glVertex3f(-TAMX/2.3,TAMY,TAMZ/2.5);
-        //glTexCoord2f(0,1);
-         glVertex3f(-TAMX/2,TAMY,TAMZ/2.5);
-    glEnd();
-    //glDisable(GL_TEXTURE_2D);
-    glPopMatrix();
-
-    //F2 "em cima da porta" sala sudoeste
-    glPushMatrix();
-    //glEnable(GL_TEXTURE_2D);
-    //glBindTexture(GL_TEXTURE_2D, texID[0]);
-    glColor3f(1,1,1);
-    glBegin(GL_QUADS);
-        //glTexCoord2f(0,0);
-         glVertex3f(-TAMX/2.3,TAMPORTAY,TAMZ/2.5);
-        //glTexCoord2f(2,0);
-         glVertex3f(-TAMX/2.3 + 35,TAMPORTAY,TAMZ/2.5);
-        //glTexCoord2f(2,1);
-         glVertex3f(-TAMX/2.3 + 35,TAMY,TAMZ/2.5);
-        //glTexCoord2f(0,1);
-         glVertex3f(-TAMX/2.3,TAMY,TAMZ/2.5);
-    glEnd();
-    //glDisable(GL_TEXTURE_2D);
-    glPopMatrix();
-
-    //F3 sala sudoeste
-    glPushMatrix();
-    //glEnable(GL_TEXTURE_2D);
-    //glBindTexture(GL_TEXTURE_2D, texID[0]);
-    glColor3f(1,1,1);
-    glBegin(GL_QUADS);
-        //glTexCoord2f(0,0);
-         glVertex3f(-TAMX/2.3 + 35,0,TAMZ/2.5);
-        //glTexCoord2f(2,0);
-         glVertex3f(-TAMX/2.3 + 40,0,TAMZ/2.5);
-        //glTexCoord2f(2,1);
-         glVertex3f(-TAMX/2.3 + 40,TAMY,TAMZ/2.5);
-        //glTexCoord2f(0,1);
-         glVertex3f(-TAMX/2.3 + 35,TAMY,TAMZ/2.5);
-    glEnd();
-    //glDisable(GL_TEXTURE_2D);
-    glPopMatrix();
-
-    //F4 sala sudoeste
-    glPushMatrix();
-    //glEnable(GL_TEXTURE_2D);
-    //glBindTexture(GL_TEXTURE_2D, texID[0]);
-    glColor3f(1,1,1);
-    glBegin(GL_QUADS);
-        //glTexCoord2f(0,0);
-         glVertex3f(-TAMX/2.3 + 40,0,TAMZ/2.5);
-        //glTexCoord2f(2,0);
-         glVertex3f(-TAMX/2.3 + 40,0,TAMZ/2);
-        //glTexCoord2f(2,1);
-         glVertex3f(-TAMX/2.3 + 40,TAMY,TAMZ/2);
-        //glTexCoord2f(0,1);
-         glVertex3f(-TAMX/2.3 + 40,TAMY,TAMZ/2.5);
-    glEnd();
-    //glDisable(GL_TEXTURE_2D);
-    glPopMatrix();
-    //---------------------------------//
+    
 
     //PARTE EXTERNA
     //Face Frente
+
+    //Chao fora
+    glPushMatrix();
+    glColor3ub(57,27,0);
+    glBegin(GL_QUADS);
+        glVertex3f(-TAMX/2-1,0.1,TAMZ/2);
+        glVertex3f(-TAMX/8,0.1,TAMZ/2);
+        glVertex3f(-TAMX/8,0.1,TAMZ/2+TAMZ/8);
+        glVertex3f(-TAMX/2-1,0.1,TAMZ/2+TAMZ/8);
+    glEnd();
+    glPopMatrix();
+
+
     //F1
     glPushMatrix();
     glEnable(GL_TEXTURE_2D);
@@ -768,16 +723,28 @@ void desenhaPredio(){
     glColor3f(1,1,1);
     glBegin(GL_QUADS);
         glTexCoord2f(1,0); glVertex3f(-TAMX/2,0,TAMZ/2);
-        glTexCoord2f(1,1); glVertex3f(-TAMX/2.3 + 40,0,TAMZ/2);
-        glTexCoord2f(0,1); glVertex3f(-TAMX/2.3 + 40,TAMY,TAMZ/2);
-        glTexCoord2f(0,0); glVertex3f(-TAMX/2,TAMY,TAMZ/2);
+        glTexCoord2f(1,1); glVertex3f(-TAMX/2+TAMSALAGRZ+8,0,TAMZ/2);
+        glTexCoord2f(0,1); glVertex3f(-TAMX/2+TAMSALAGRZ+8,3*TAMY/4,TAMZ/2);
+        glTexCoord2f(0,0); glVertex3f(-TAMX/2,3*TAMY/4,TAMZ/2);
     glEnd();
     glDisable(GL_TEXTURE_2D);
     glPopMatrix();
 
+    glPushMatrix();
+    glTranslatef(-TAMX/2,TAMY/2,TAMZ/2);
+    corPilar();
+    desenhaPilarInterno(3,TAMY,3);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(-TAMX/2 + TAMSALAGRZ+8,TAMY/2,TAMZ/2);
+    corPilar();
+    desenhaPilarInterno(3,TAMY,3);
+    glPopMatrix();
+
 
     //Vidros da frente
-    desenhaVidros(-TAMX/2.3+40,-TAMX/8,TAMZ/2,TAMZ/2);
+    desenhaVidros(-TAMX/2+TAMSALAGRZ+10,-TAMX/8,TAMZ/2,TAMZ/2);
     
     glPushMatrix();
         glColor3f(0.2,0.2,0.2);
@@ -841,13 +808,15 @@ void desenhaPredio(){
     glBindTexture(GL_TEXTURE_2D, texID[0]);
     glColor3f(1,1,1);
     glBegin(GL_QUADS);
-        glTexCoord2f(0,0); glVertex3f(XPORTA + TAMPORTAX,0,TAMZ/2);
+        glTexCoord2f(0,0); glVertex3f(XPORTA + 2*TAMPORTAX+3,0,TAMZ/2);
         glTexCoord2f(0,1); glVertex3f(TAMX/2-TAMSALAGRZ,0,TAMZ/2);
         glTexCoord2f(1,1); glVertex3f(TAMX/2-TAMSALAGRZ,TAMY,TAMZ/2);
-        glTexCoord2f(1,0); glVertex3f(XPORTA + TAMPORTAX,TAMY,TAMZ/2);
+        glTexCoord2f(1,0); glVertex3f(XPORTA + 2*TAMPORTAX+3,TAMY,TAMZ/2);
     glEnd();
     glDisable(GL_TEXTURE_2D);
     glPopMatrix();
+    
+    
 
     glPushMatrix();
     corPilar();
@@ -866,24 +835,20 @@ void desenhaPredio(){
     glEnd();
     glPopMatrix();
 
-    //F5.3
-    glPushMatrix();
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, texID[0]);
-    glColor3f(1,1,1);
-    glBegin(GL_QUADS);
-        glTexCoord2f(0,1); glVertex3f(XPORTA,TAMPORTAY,TAMZ/2);
-        glTexCoord2f(0,0); glVertex3f(XPORTA + TAMPORTAX,TAMPORTAY,TAMZ/2);
-        glTexCoord2f(0.5,0); glVertex3f(XPORTA + TAMPORTAX,TAMY,TAMZ/2);
-        glTexCoord2f(0.5,1); glVertex3f(XPORTA,TAMY,TAMZ/2);
-    glEnd();
-    glPopMatrix();
+    
+    //Pilar entrada
+    desenhaPilar(45, TAMX/2 - 10, TAMY/2,TAMZ/2 + TAMZ/10);
+    
+    //Pilar frente
+    for(int i=0;i<6;i++)
+        desenhaPilar(45, -TAMX/6-i*(20), TAMY/2,TAMZ/2 + TAMZ/9-5);
 
-
+    //Pilar frente canto esquerdo
+    desenhaPilar(45, -TAMX/2-TAMSALAGRZ+25, TAMY/2,TAMZ/2 + TAMZ/9-5);
 //----------------------//
-    //Face Trás
-    //Vidros e pilares
-    desenhaVidros(-TAMX/2,-TAMX/4-3,-TAMZ/2,-TAMZ/2);
+    //Face Fundo
+    //Vidros e pilares fundo
+    desenhaVidros(-TAMX/2+2.5,-TAMX/4-3,-TAMZ/2,-TAMZ/2);
     
     glPushMatrix();
     glTranslatef(-TAMX/4-1,TAMY/2,-TAMZ/2);
@@ -927,20 +892,48 @@ void desenhaPredio(){
     desenhaPilarInterno(4,TAMY,4);
     glPopMatrix();
 
+
+    //----------------------//
     //Face Esquerda
+
+    //Vidros e pilares esquerda fundo
+    glPushMatrix();
+    glTranslatef(-TAMX/2+1.5,TAMY/2,-TAMZ/2+1.5);
+    corPilar();
+    desenhaPilarInterno(4,TAMY,4);
+    glPopMatrix();
+
+    desenhaVidros(-TAMX/2,-TAMX/2,-3*TAMZ/8-2.5,-TAMZ/2+2.5);
+
+    glPushMatrix();
+    glTranslatef(-TAMX/2,TAMY/2,-3*TAMZ/8);
+    corPilar();
+    desenhaPilarInterno(3,TAMY,3);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(-TAMX/2,TAMY/2,-TAMZ/4+2);
+    corPilar();
+    desenhaPilarInterno(3,TAMY,6);
+    glPopMatrix();
+
+    
+    
+    
     //E1
     glPushMatrix();
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, texID[0]);
     glColor3f(1,1,1);
     glBegin(GL_QUADS);
-        glTexCoord2f(0,2); glVertex3f(-TAMX/2,0,-TAMZ/2);
+        glTexCoord2f(0,1); glVertex3f(-TAMX/2,0,-3*TAMZ/8);
         glTexCoord2f(0,0); glVertex3f(-TAMX/2,0,-TAMZ/4);
         glTexCoord2f(1,0); glVertex3f(-TAMX/2,TAMY,-TAMZ/4);
-        glTexCoord2f(1,2); glVertex3f(-TAMX/2,TAMY,-TAMZ/2);
+        glTexCoord2f(1,1); glVertex3f(-TAMX/2,TAMY,-3*TAMZ/8);
     glEnd();
     glDisable(GL_TEXTURE_2D);
     glPopMatrix();
+    
 
     //E2
     glPushMatrix();
@@ -977,10 +970,10 @@ void desenhaPredio(){
     glBindTexture(GL_TEXTURE_2D, texID[0]);
     glColor3f(1,1,1);
     glBegin(GL_QUADS);
-        glTexCoord2f(0,1); glVertex3f(-TAMX/2 + TAMX/5,0,-TAMZ/7);
-        glTexCoord2f(0,0); glVertex3f(-TAMX/2 + TAMX/15,0,-TAMZ/7);
-        glTexCoord2f(1,0); glVertex3f(-TAMX/2 + TAMX/15,TAMY,-TAMZ/7);
-        glTexCoord2f(1,1); glVertex3f(-TAMX/2 + TAMX/5,TAMY,-TAMZ/7);
+        glTexCoord2f(0,0.3); glVertex3f(-TAMX/2 + TAMX/5,0,-TAMZ/7);
+        glTexCoord2f(0,0); glVertex3f(-TAMX/2 + TAMX/6,0,-TAMZ/7);
+        glTexCoord2f(1,0); glVertex3f(-TAMX/2 + TAMX/6,TAMY,-TAMZ/7);
+        glTexCoord2f(1,0.3); glVertex3f(-TAMX/2 + TAMX/5,TAMY,-TAMZ/7);
     glEnd();
     glDisable(GL_TEXTURE_2D);
     glPopMatrix();
@@ -991,27 +984,56 @@ void desenhaPredio(){
     glBindTexture(GL_TEXTURE_2D, texID[0]);
     glColor3f(1,1,1);
     glBegin(GL_QUADS);
-        glTexCoord2f(0,0.5); glVertex3f(-TAMX/2 + TAMX/15,0,-TAMZ/7);
-        glTexCoord2f(0,0); glVertex3f(-TAMX/2 + TAMX/15,0,-TAMZ/10);
-        glTexCoord2f(1,0); glVertex3f(-TAMX/2 + TAMX/15,TAMY,-TAMZ/10);
-        glTexCoord2f(1,0.5); glVertex3f(-TAMX/2 + TAMX/15,TAMY,-TAMZ/7);
+        glTexCoord2f(0,1); glVertex3f(-TAMX/2,0,-TAMZ/4+3);
+        glTexCoord2f(0,0); glVertex3f(-TAMX/2,0,-TAMZ/10);
+        glTexCoord2f(1,0); glVertex3f(-TAMX/2,TAMY,-TAMZ/10);
+        glTexCoord2f(1,1); glVertex3f(-TAMX/2,TAMY,-TAMZ/4+3);
     glEnd();
     glDisable(GL_TEXTURE_2D);
     glPopMatrix();
 
-    //E6
     glPushMatrix();
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, texID[0]);
-    glColor3f(1,1,1);
-    glBegin(GL_QUADS);
-        glTexCoord2f(0,0.5); glVertex3f(-TAMX/2 + TAMX/15,0,-TAMZ/10);
-        glTexCoord2f(0,0); glVertex3f(-TAMX/2,0,-TAMZ/10);
-        glTexCoord2f(1,0); glVertex3f(-TAMX/2,TAMY,-TAMZ/10);
-        glTexCoord2f(1,0.5); glVertex3f(-TAMX/2 + TAMX/15,TAMY,-TAMZ/10);
-    glEnd();
-    glDisable(GL_TEXTURE_2D);
+    glTranslatef(-TAMX/2,TAMY/2,-TAMZ/10);
+    corPilar();
+    desenhaPilarInterno(3,TAMY,3);
     glPopMatrix();
+/*
+//E5
+glPushMatrix();
+glEnable(GL_TEXTURE_2D);
+glBindTexture(GL_TEXTURE_2D, texID[0]);
+glColor3f(1,1,1);
+glBegin(GL_QUADS);
+    glTexCoord2f(0,0.5); glVertex3f(-TAMX/2 + TAMX/15,0,-TAMZ/7);
+    glTexCoord2f(0,0); glVertex3f(-TAMX/2 + TAMX/15,0,-TAMZ/10);
+    glTexCoord2f(1,0); glVertex3f(-TAMX/2 + TAMX/15,TAMY,-TAMZ/10);
+    glTexCoord2f(1,0.5); glVertex3f(-TAMX/2 + TAMX/15,TAMY,-TAMZ/7);
+glEnd();
+glDisable(GL_TEXTURE_2D);
+glPopMatrix();
+*/
+
+/*
+//E6
+glPushMatrix();
+glEnable(GL_TEXTURE_2D);
+glBindTexture(GL_TEXTURE_2D, texID[0]);
+glColor3f(1,1,1);
+glBegin(GL_QUADS);
+    glTexCoord2f(0,0.5); glVertex3f(-TAMX/2 + TAMX/15,0,-TAMZ/10);
+    glTexCoord2f(0,0); glVertex3f(-TAMX/2,0,-TAMZ/10);
+    glTexCoord2f(1,0); glVertex3f(-TAMX/2,TAMY,-TAMZ/10);
+    glTexCoord2f(1,0.5); glVertex3f(-TAMX/2 + TAMX/15,TAMY,-TAMZ/10);
+glEnd();
+glDisable(GL_TEXTURE_2D);
+glPopMatrix();
+*/
+
+/*
+glPushMatrix();
+desenhaBanheiro();
+glPopMatrix();
+*/
 
     //E7
     glPushMatrix();
@@ -1019,14 +1041,25 @@ void desenhaPredio(){
     glBindTexture(GL_TEXTURE_2D, texID[0]);
     glColor3f(1,1,1);
     glBegin(GL_QUADS);
-        glTexCoord2f(0,4); glVertex3f(-TAMX/2,0,-TAMZ/10);
-        glTexCoord2f(0,0); glVertex3f(-TAMX/2,0,TAMZ/2);
-        glTexCoord2f(1,0); glVertex3f(-TAMX/2,TAMY,TAMZ/2);
-        glTexCoord2f(1,4); glVertex3f(-TAMX/2,TAMY,-TAMZ/10);
+        glTexCoord2f(0,4); glVertex3f(-TAMX/2-TAMSALAGRZ+10,0,-TAMZ/10);
+        glTexCoord2f(0,0); glVertex3f(-TAMX/2-TAMSALAGRZ+10,0,TAMZ/2-60);
+        glTexCoord2f(0.3,0); glVertex3f(-TAMX/2-TAMSALAGRZ+10,TAMY/3,TAMZ/2-60);
+        glTexCoord2f(0.3,4); glVertex3f(-TAMX/2-TAMSALAGRZ+10,TAMY/3,-TAMZ/10);
     glEnd();
     glDisable(GL_TEXTURE_2D);
     glPopMatrix();
 
+    //Chao fora
+    glPushMatrix();
+    glColor3ub(57,27,0);
+    glBegin(GL_QUADS);
+        glVertex3f(-TAMX/2-TAMSALAGRZ+10,0.1,TAMZ/2+TAMZ/8);
+        glVertex3f(-TAMX/2,0.1,TAMZ/2+TAMZ/8);
+        glVertex3f(-TAMX/2,0.1,TAMZ/2-60);
+        glVertex3f(-TAMX/2-TAMSALAGRZ+10,0.1,TAMZ/2-60);
+    glEnd();
+    glPopMatrix();
+    //-----------------//
     //Face Direita
     //D1
     glPushMatrix();
@@ -1102,14 +1135,7 @@ void desenhaPredio(){
     glDisable(GL_TEXTURE_2D);
     glPopMatrix();
 
-    //Pilar entrada
-    desenhaPilar(45, TAMX/2 - 10, TAMY/2,TAMZ/2 + TAMZ/10);
     
-    //Pilar frente
-    desenhaPilar(45, -TAMX/6, TAMY/2,TAMZ/2 + TAMZ/9);
-    desenhaPilar(45, -TAMX/6 - 20, TAMY/2,TAMZ/2 + TAMZ/9);
-    desenhaPilar(45, -TAMX/6 - 40, TAMY/2,TAMZ/2 + TAMZ/9);
-    desenhaPilar(45, -TAMX/6 - 60, TAMY/2,TAMZ/2 + TAMZ/9);
 
     desenhaChao();
     desenhaTeto();
@@ -1117,6 +1143,7 @@ void desenhaPredio(){
     desenhaLeste();
     desenhaJardim();
     desenhaMeio();
+    desenhaOeste();
     desenhaFundoDir();
 }
 
@@ -1205,7 +1232,26 @@ void janelaAberta(float tam_x, float tam_y){
     glPopMatrix();
 }
 
+
+void chaoSala(float tam_x, float tam_z){
+    glPushMatrix();
+    glColor3ub(134,81,81);
+    glBegin(GL_QUADS);
+        glVertex3f(0, 0, 0);
+        glVertex3f(tam_x, 0, 0);
+        glVertex3f(tam_x, 0, -tam_z);
+        glVertex3f(0, 0, -tam_z);
+    glEnd();
+    glPopMatrix();
+}
+
 void desenhaSalaGrande(float tam_x, float tam_z){
+    //Chao
+    glPushMatrix();
+    glTranslatef(0,0.11,0);
+    chaoSala(tam_x,tam_z);
+    glPopMatrix();
+
     //Frente da sala grande
     glPushMatrix();
     glColor3ub(156,149,142);
@@ -1292,7 +1338,7 @@ void desenhaSalaGrande(float tam_x, float tam_z){
     glPushMatrix();
     glColor3ub(115,59,18);
     glTranslatef(tam_x/2, TAMY/3, -tam_z);
-    glScalef(tam_x, 2, 5);
+    glScalef(tam_x-0.1, 2, 5);
     glutSolidCube(1);
     glPopMatrix();
 
@@ -1340,6 +1386,7 @@ void desenhaSalaGrande(float tam_x, float tam_z){
     
 
 }
+
 void salaEstudos(){
     //Sala de estudos
     //Frente
@@ -1486,10 +1533,189 @@ void desenhaFundoDir(){
     glRotatef(-90,0,1,0);
     desenhaSalaGrande(TAMZ/8,60);
     glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(TAMX/2-60,0,-TAMZ/2+0.1);
+    glRotatef(-90,0,1,0);
+    desenhaBanheiro(72,60-0.1);
+    glPopMatrix();
+
+    glPushMatrix();
+    glColor3ub(68,62,52);
+    glTranslatef(TAMX/2-30,TAMY/2,-TAMZ/2+73.6);
+    desenhaPilarInterno(62,TAMY,2.9);
+    glPopMatrix();
+}
+
+void desenhaOeste(){
+    
+    glPushMatrix();
+    glTranslatef(-TAMX/2+45.2,0,-TAMZ/7-0.1);
+    glScalef(-1,1,1);
+    desenhaBanheiro(45,62);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(-TAMX/2+49.3,TAMY/2,-TAMZ/7);
+    corPilar();
+    desenhaPilarInterno(8,TAMY,2);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(-TAMX/2+TAMX/6-30,0,-TAMZ/7-0.1);
+    desenhaBanheiro(45,62);
+    glPopMatrix();
+
+    //Salas Oeste
+    for(int i=0;i<5;i++){
+        glPushMatrix();
+        glTranslatef(-TAMX/2+10.1,0,TAMZ/2-60-i*(60));
+        glRotatef(90,0,1,0);
+        desenhaSalaGrande(60,TAMSALAGRZ);
+        glPopMatrix();
+    }
+    
+    //Sala diferentona
+    glPushMatrix();
+    glTranslatef(-TAMX/2+TAMSALAGRZ+8,0,TAMZ/2-TAMSALADIFZ-1);
+    glRotatef(180,0,1,0);
+    salaDif(TAMSALADIFX,TAMSALADIFZ);
+    glPopMatrix();
+
+}
+
+void portaVidro(float tam_x, float tam_y){
+    glPushMatrix();
+    janelaFechada(tam_x/2, tam_y);
+    janelaFechada(tam_x/4+1, tam_y);
+    glTranslatef(0,tam_y,0);
+    janelaFechada(tam_x, TAMY-tam_y);
+    janelaFechada(3*tam_x/4, TAMY-tam_y);
+    janelaFechada(tam_x/2, TAMY-tam_y);
+    janelaFechada(tam_x/4, TAMY-tam_y);
+    glTranslatef(0,-tam_y,0);
+    glTranslatef(tam_x/2+0.2,0,0);
+    janelaFechada(tam_x/2, tam_y);
+    janelaFechada(tam_x/4+1, tam_y);
+    glPopMatrix();
 }
 
 
+void salaDif(float tam_x, float tam_z){
+
+    //Chao
+    glPushMatrix();
+    glTranslatef(0,0.11,0);
+    chaoSala(tam_x,tam_z);
+    glPopMatrix();
+
+    //Frente
+    glPushMatrix();
+    glColor3ub(156,149,142);
+    glBegin(GL_QUADS);
+        glVertex3f(0, 0, 0);
+        glVertex3f(5, 0, 0);
+        glVertex3f(5, TAMY, 0);
+        glVertex3f(0, TAMY, 0);
+    glEnd();
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(25,0,0);
+    glRotatef(180,0,1,0);
+    porta();
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(25,0,0);
+    porta();
+    glPopMatrix();
+
+    
+    glPushMatrix();
+    glColor3ub(156,149,142);
+    glBegin(GL_QUADS);
+        glVertex3f(45, 0, 0);
+        glVertex3f(tam_x, 0, 0);
+        glVertex3f(tam_x, TAMY, 0);
+        glVertex3f(45, TAMY, 0);
+    glEnd();
+    glPopMatrix();
+
+    glPushMatrix();
+    glColor3ub(156,149,142);
+    glBegin(GL_QUADS);
+        glVertex3f(5, TAMPORTAY, 0);
+        glVertex3f(tam_x, TAMPORTAY, 0);
+        glVertex3f(tam_x, TAMY, 0);
+        glVertex3f(5, TAMY, 0);
+    glEnd();
+    glPopMatrix();
+
+    //Direita
+    glPushMatrix();
+    glColor3ub(156,149,142);
+    glBegin(GL_QUADS);
+        glVertex3f(tam_x, 0, 0);
+        glVertex3f(tam_x, 0, -tam_z);
+        glVertex3f(tam_x, TAMY, -tam_z);
+        glVertex3f(tam_x, TAMY, 0);
+    glEnd();
+    glPopMatrix();
+
+    //Esquerda
+    glPushMatrix();
+    glColor3ub(156,149,142);
+    glBegin(GL_QUADS);
+        glVertex3f(0, 0, 0);
+        glVertex3f(0, 0, -tam_z);
+        glVertex3f(0, TAMY, -tam_z);
+        glVertex3f(0, TAMY, 0);
+    glEnd();
+    glPopMatrix();
+
+    glPushMatrix();
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, texID[0]);
+    glColor3f(0.9,0.9,0.9);
+    glBegin(GL_QUADS);
+        glTexCoord2f(0,1); glVertex3f(-0.1,0,-1);
+        glTexCoord2f(0,0); glVertex3f(-0.1, 0, -tam_z+1);
+        glTexCoord2f(1,0); glVertex3f(-0.1,TAMY,-tam_z+1);
+        glTexCoord2f(1,1); glVertex3f(-0.1,TAMY,-1);
+    glEnd();
+    glDisable(GL_TEXTURE_2D);
+    glPopMatrix();
+
+    glPushMatrix();
+    corPilar();
+    glTranslatef(0.5,TAMY/2,-0.5);
+    desenhaPilarInterno(4,TAMY,4);
+    glPopMatrix();
+    //Fundo
+    glPushMatrix();
+    glColor3ub(156,149,142);
+    glBegin(GL_QUADS);
+        glVertex3f(0, 0, -tam_z);
+        glVertex3f(tam_x, 0, -tam_z);
+        glVertex3f(tam_x, 3*TAMY/4, -tam_z);
+        glVertex3f(0, 3*TAMY/4, -tam_z);
+    glEnd();
+    glPopMatrix();
+
+    //Janelas
+    glPushMatrix();
+    glTranslatef(0,3*TAMY/4,-tam_z);
+    janelaFechada(tam_x/3,TAMY/4);
+    glTranslatef(tam_x/3,0,0);
+    janelaFechada(tam_x/3,TAMY/4);
+    glTranslatef(tam_x/3,0,0);
+    janelaFechada(tam_x/3-2,TAMY/4);
+    glPopMatrix();
+}
+
 void desenhaMeio(){
+    //Salas Meio
     desenhaSalaInterna(45,40,XJARDIM+TAMXJARDIM-25,ZJARDIM-TAMZJARDIM-95);
     desenhaSalaInterna(45,40,XJARDIM+TAMXJARDIM-70.1,ZJARDIM-TAMZJARDIM-95);
     desenhaSalaInterna(45,40,XJARDIM+TAMXJARDIM-115.2,ZJARDIM-TAMZJARDIM-95);
@@ -1538,6 +1764,13 @@ void desenhaJardim(){
 
     //Parede direita
     desenhaVidros(XJARDIM+TAMXJARDIM+20, XJARDIM+TAMXJARDIM+20,ZJARDIM, ZJARDIM - TAMZJARDIM-17);
+
+    //Porta vidro
+    glPushMatrix();
+    glTranslatef(XJARDIM+TAMXJARDIM+20,0,ZJARDIM+30);
+    glRotatef(90,0,1,0);
+    portaVidro(29,TAMPORTAY);
+    glPopMatrix();
 
     //Parede fundo
     glPushMatrix();
@@ -1608,20 +1841,30 @@ void desenhaJardim(){
 
     //SALAS AO REDOR DO JARDIM
     //Salas fundo
-    glPushMatrix();
-    desenhaSala(45, 40, XJARDIM+TAMXJARDIM-25, ZJARDIM - TAMZJARDIM - 17.1);
-    desenhaSala(45,40, XJARDIM+TAMXJARDIM-70.1, ZJARDIM - TAMZJARDIM - 17.1);
-    desenhaSala(45,40, XJARDIM+TAMXJARDIM-115.2, ZJARDIM - TAMZJARDIM - 17.1);
-    glPopMatrix();
+    for(int i=0;i<2;i++){
+        desenhaSala(TAMSALAINTX, TAMSALAINTZ, XJARDIM-20+i*(TAMSALAINTX+0.01), ZJARDIM -TAMZJARDIM - 17.1);
+    }
+    for(int i=0;i<2;i++){
+        desenhaSala(35.5, TAMSALAINTZ, XJARDIM-20+2*(TAMSALAINTX+0.01)+i*(35.5+0.01), ZJARDIM -TAMZJARDIM - 17.1);
+    }
+    
     
     //Salas esquerda
     glPushMatrix();
     glRotatef(90,0,1,0);
-    desenhaSala(40,45, -ZJARDIM -30, XJARDIM-20);
-    desenhaSala(40,45, -ZJARDIM +10.1, XJARDIM-20);
-    desenhaSala(40,45, -ZJARDIM +50.2, XJARDIM-20);
-    desenhaSala(40,45, -ZJARDIM +90.3, XJARDIM-20);
+    for(int i=0;i<5;i++){
+        desenhaSala(34,TAMSALAINTZ+5, -ZJARDIM -30+i*(34+0.01), XJARDIM-20);
+    }
     glPopMatrix();
+    
+    //Pilar Ponta
+    glPushMatrix();
+    glColor3ub(68,62,52);
+    glTranslatef(XJARDIM-24,TAMY/2,ZJARDIM-TAMZJARDIM-18);
+    desenhaPilarInterno(7,TAMY,5);
+    glPopMatrix();
+
+
     
 
 }
@@ -2164,85 +2407,87 @@ void desenhaEntrada(){
     glPopMatrix();
     
     glPushMatrix();
-    glColor3f(0.8,0.8,0.8);
-    glBegin(GL_QUADS);
-        glVertex3f(XPORTA, 0, TAMZ/2);
-        glVertex3f(XPORTA-10, 0, TAMZ/2);
-        glVertex3f(XPORTA-10, TAMY, TAMZ/2);
-        glVertex3f(XPORTA, TAMY, TAMZ/2);
-    glEnd();
+    corPilar();
+    glTranslatef(-TAMX/8,TAMY/2,TAMZ/2);
+    desenhaPilarInterno(3,TAMY,3);
     glPopMatrix();
 
     glPushMatrix();
-    glColor3f(0.8,0.8,0.8);
-    glBegin(GL_QUADS);
-        glVertex3f(-TAMX/8+5, 0, TAMZ/2);
-        glVertex3f(-TAMX/8, 0, TAMZ/2);
-        glVertex3f(-TAMX/8, TAMY, TAMZ/2);
-        glVertex3f(-TAMX/8+5, TAMY, TAMZ/2);
-    glEnd();
+    corPilar();
+    glTranslatef(-TAMX/8,TAMY/2,TAMZ/2-TAMZ/12-15);
+    desenhaPilarInterno(3,TAMY,3);
     glPopMatrix();
 
     glPushMatrix();
-    glColor3f(0.8,0.8,0.8);
-    glBegin(GL_QUADS);
-        glVertex3f(XPORTA-30, 0, TAMZ/2);
-        glVertex3f(-TAMX/8+25, 0, TAMZ/2);
-        glVertex3f(-TAMX/8+25, TAMY, TAMZ/2);
-        glVertex3f(XPORTA-30, TAMY, TAMZ/2);
-    glEnd();
+    corPilar();
+    glTranslatef(-TAMX/8+1.6,TAMY/2,TAMZ/2-TAMZ/12);
+    desenhaPilarInterno(3,TAMY,3);
     glPopMatrix();
 
     glPushMatrix();
-    glColor3f(0.8,0.8,0.8);
-    glBegin(GL_QUADS);
-        glVertex3f(XPORTA-10, TAMPORTAY, TAMZ/2);
-        glVertex3f(XPORTA-30, TAMPORTAY, TAMZ/2);
-        glVertex3f(XPORTA-30, TAMY, TAMZ/2);
-        glVertex3f(XPORTA-10, TAMY, TAMZ/2);
-    glEnd();
-    glPopMatrix();
-
-    glPushMatrix();
-    glColor3f(0.8,0.8,0.8);
-    glBegin(GL_QUADS);
-        glVertex3f(-TAMX/8+25, TAMPORTAY, TAMZ/2);
-        glVertex3f(-TAMX/8+5, TAMPORTAY, TAMZ/2);
-        glVertex3f(-TAMX/8+5, TAMY, TAMZ/2);
-        glVertex3f(-TAMX/8+25, TAMY, TAMZ/2);
-    glEnd();
+    corPilar();
+    glTranslatef(XPORTA,TAMY/2,TAMZ/2-TAMZ/12-7.5);
+    desenhaPilarInterno(3,TAMY,12);
     glPopMatrix();
 
     //Banheiros entrada
-    desenhaBanheiro();
     glPushMatrix();
-    glTranslatef(XPORTA,0,0);
-    desenhaBanheiro();
+    glTranslatef(XPORTA-0.1,0,TAMZ/2);
+    glRotatef(180,0,1,0);
+    desenhaBanheiro(53,74);
+    glPopMatrix();
+    glPushMatrix();
+    glTranslatef(-TAMX/8+0.1,0,TAMZ/2);
+    glScalef(1,1,-1);
+    desenhaBanheiro(60,74);
     glPopMatrix();
 
     //Mesa entrada
     desenhaMesaEntrada();
+
+    //Porta entrada
+    glPushMatrix();
+    glTranslatef(XPORTA,0,TAMZ/2);
+    portaVidro(TAMPORTAX,TAMPORTAY);
+    glPopMatrix();
+
+    glPushMatrix();
+    corPilar();
+    glTranslatef(XPORTA+TAMPORTAX+1,TAMY/2,TAMZ/2-1);
+    desenhaPilarInterno(3,TAMY,4);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(XPORTA+TAMPORTAX+2,0,TAMZ/2);
+    portaVidro(TAMPORTAX,TAMPORTAY);
+    glPopMatrix();
+
+    glPushMatrix();
+    corPilar();
+    glTranslatef(XPORTA + 2*TAMPORTAX+3,TAMY/2,TAMZ/2);
+    desenhaPilarInterno(4, TAMY, 4);
+    glPopMatrix();
 }
 
-void desenhaBanheiro(){
-    //Lateral 1
+void desenhaBanheiro(float tam_x, float tam_z){
+    //Parede esquerda
     glPushMatrix();
     glColor3f(0.92,0.92,0.92);
     glBegin(GL_QUADS);
-        glVertex3f(-TAMX/8 + 0.1, 0, TAMZ/2);
-        glVertex3f(-TAMX/8 + 0.1, 0, TAMZ/2 + TAMZ/8);
-        glVertex3f(-TAMX/8 + 0.1, TAMY, TAMZ/2 + TAMZ/8);
-        glVertex3f(-TAMX/8 + 0.1, TAMY, TAMZ/2);
+        glVertex3f(0, 0, 0);
+        glVertex3f(0, 0, -tam_z);
+        glVertex3f(0, TAMY, -tam_z);
+        glVertex3f(0, TAMY, 0);
     glEnd();
     glPopMatrix();
-    //Lateral 2
+    //Parede direita
     glPushMatrix();
     glColor3f(0.88,0.88,0.88);
     glBegin(GL_QUADS);
-        glVertex3f((XPORTA - TAMX/8)/2-0.1, 0, TAMZ/2);
-        glVertex3f((XPORTA - TAMX/8)/2-0.1, 0, TAMZ/2 + TAMZ/8);
-        glVertex3f((XPORTA - TAMX/8)/2-0.1, TAMY, TAMZ/2 + TAMZ/8);
-        glVertex3f((XPORTA - TAMX/8)/2-0.1, TAMY, TAMZ/2);
+        glVertex3f(tam_x, 0, 0);
+        glVertex3f(tam_x, 0, -tam_z);
+        glVertex3f(tam_x, TAMY, -tam_z);
+        glVertex3f(tam_x, TAMY, 0);
     glEnd();
     glPopMatrix();
 
@@ -2250,10 +2495,41 @@ void desenhaBanheiro(){
     glPushMatrix();
     glColor3f(0.91,0.91,0.91);
     glBegin(GL_QUADS);
-        glVertex3f((XPORTA - TAMX/8)/2-0.1, 0, TAMZ/2 + TAMZ/8-0.1);
-        glVertex3f(-TAMX/8, 0, TAMZ/2 + TAMZ/8-0.1);
-        glVertex3f(-TAMX/8, TAMY, TAMZ/2 + TAMZ/8-0.1);
-        glVertex3f((XPORTA - TAMX/8)/2-0.1, TAMY, TAMZ/2+ TAMZ/8-0.1);
+        glVertex3f(0, 0, -tam_z);
+        glVertex3f(tam_x, 0, -tam_z);
+        glVertex3f(tam_x, TAMY, -tam_z);
+        glVertex3f(0, TAMY, -tam_z);
+    glEnd();
+    glPopMatrix();
+
+    //Frente
+    glPushMatrix();
+    glColor3f(0.8,0.8,0.8);
+    glBegin(GL_QUADS);
+        glVertex3f(0, 0, 0);
+        glVertex3f(5, 0, 0);
+        glVertex3f(5, TAMY, 0);
+        glVertex3f(0, TAMY, 0);
+    glEnd();
+    glPopMatrix();
+
+    glPushMatrix();
+    glColor3f(0.8,0.8,0.8);
+    glBegin(GL_QUADS);
+        glVertex3f(5, TAMPORTAY, 0);
+        glVertex3f(25, TAMPORTAY, 0);
+        glVertex3f(25, TAMY, 0);
+        glVertex3f(5, TAMY, 0);
+    glEnd();
+    glPopMatrix();
+
+    glPushMatrix();
+    glColor3f(0.8,0.8,0.8);
+    glBegin(GL_QUADS);
+        glVertex3f(25, 0, 0);
+        glVertex3f(tam_x, 0, 0);
+        glVertex3f(tam_x, TAMY, 0);
+        glVertex3f(25, TAMY, 0);
     glEnd();
     glPopMatrix();
 
@@ -2261,13 +2537,39 @@ void desenhaBanheiro(){
     glPushMatrix();
     glColor3f(0.84,0.84,0.84);
     glBegin(GL_QUADS);
-        glVertex3f(-TAMX/8 + 0.1, 0.1, TAMZ/2);
-        glVertex3f((XPORTA - TAMX/8)/2-0.1, 0.1, TAMZ/2);
-        glVertex3f((XPORTA - TAMX/8)/2-0.1, 0.1, TAMZ/2 + TAMZ/8);
-        glVertex3f(-TAMX/8 + 0.1, 0.1, TAMZ/2 + TAMZ/8);
+        glVertex3f(0, 0.1,0);
+        glVertex3f(tam_x, 0.1, 0);
+        glVertex3f(tam_x, 0.1, -tam_z);
+        glVertex3f(0, 0.1, -tam_z);
     glEnd();
     glPopMatrix();
 
+    //Porta
+    glPushMatrix();
+    glTranslatef(5,0,0);
+    porta();
+    glPopMatrix();
+
+}
+
+void porta(){
+    //Porta
+    glPushMatrix();
+    glColor3ub(136,91,59);
+    glBegin(GL_QUADS);
+        glVertex3f(0, 0, 0);
+        glVertex3f(20, 0, 0);
+        glVertex3f(20, TAMPORTAY, 0);
+        glVertex3f(0, TAMPORTAY, 0);
+    glEnd();
+    glPopMatrix();
+
+    //Maçaneta porta
+    glPushMatrix();
+    glColor3f(0.3,0.3,0.2);
+    glTranslatef(5, TAMY/3-5, 0);
+    glutSolidSphere(1.5,20,20);
+    glPopMatrix();
 }
 
 void MOUSE_Button(int botao, int estado, int x, int y)
