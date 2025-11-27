@@ -19,7 +19,7 @@
 #define TAMY 70
 
 //Definição de Constantes do jardim
-#define TAMXJARDIM TAMX/4.5
+#define TAMXJARDIM 77
 #define TAMZJARDIM TAMZ/4.8
 #define XJARDIM -90
 #define ZJARDIM 130
@@ -46,6 +46,11 @@
 #define TAMPRAX 
 #define TAMPRAZ 70
 
+#define TAMMESAY 16
+#define TAMMESAX 15
+#define TAMMESAZ 25
+
+
 
 void desenhaEntrada();
 void desenhaLeste();
@@ -63,9 +68,10 @@ void desenhaVidros(float xinicio, float xfim, float zinicio, float zfim);
 void janelaFechada(float tam_x, float tam_y);
 void janelaAberta(float tam_x, float tam_y);
 void desenhaObjetos();
-void desenhaMesa();
+void desenhaMesa(float tam_x, float tam_y, float tam_z);
+void desenhaCadeira(float tam_x, float tam_y, float tam_z);
 void desenhaMesaEntrada();
-void desenhaBanheiro(float tam_x, float tam_z);
+void desenhaBanheiro(float tam_x, float tam_z, int flag);
 void desenhaMeio();
 void desenhaOeste();
 void desenhaFundoDir();
@@ -75,6 +81,7 @@ void corPilar();
 void porta();
 void portaVidro(float tam_x, float tam_y);
 void chaoSala(float tam_x, float tam_z);
+void mesaDif(float tam_x, float tam_y, float tam_z);
 
 //Declaração de Variáveis Globis
 int projecao=0; //Variável Lógica para Definir o Tipo de Projeção (Perspectiva ou Ortogonal)
@@ -91,12 +98,13 @@ int y_temp=-1; //Armazena posição Y do ponteiro do mouse
 int rotacao = 0; //Controla eixo de rotação do mouse
 int i;//controle do for
 
-GLuint texID[2]; // IDs das texturas
+GLuint texID[3]; // IDs das texturas
 
 
 const char *textures[] = {
     "tijolo.png",
-    "chao-fora.jpeg"
+    "chao-fora.jpeg",
+    "banheiro.png"
 };
 
 
@@ -520,10 +528,10 @@ void desenhaTeto(){
     glColor3f(0.5,0.5,0.5);
     glPushMatrix();
     glBegin(GL_QUADS);
-    glVertex3f(-TAMX/2,TAMY,-TAMZ/2);
+    glVertex3f(-TAMX/2-TAMSALAGRZ+10,TAMY,-TAMZ/2);
     glVertex3f(TAMX/2,TAMY,-TAMZ/2);
     glVertex3f(TAMX/2,TAMY + TAMY/3,-TAMZ/2);
-    glVertex3f(-TAMX/2,TAMY + TAMY/3,-TAMZ/2);
+    glVertex3f(-TAMX/2-TAMSALAGRZ+10,TAMY + TAMY/3,-TAMZ/2);
     glEnd();
     glPopMatrix();
 
@@ -896,6 +904,24 @@ void desenhaPredio(){
     //----------------------//
     //Face Esquerda
 
+    //Chao fora
+    glPushMatrix();
+    glColor3ub(57,27,0);
+    glBegin(GL_QUADS);
+        glVertex3f(-TAMX/2-TAMSALAGRZ+10,0.1,-TAMZ/2);
+        glVertex3f(-TAMX/2,0.1,-TAMZ/2);
+        glVertex3f(-TAMX/2,0.1,-TAMZ/10);
+        glVertex3f(-TAMX/2-TAMSALAGRZ+10,0.1,-TAMZ/10);
+    glEnd();
+    glPopMatrix();
+
+    glPushMatrix();
+    desenhaPilar(-45,-TAMX/2-TAMSALADIFZ+15,TAMY/2,-TAMZ/2+10);
+    glTranslatef(0,0,40);
+    for(int j=0;j<6;j++){
+        desenhaPilar(-45,-TAMX/2-TAMSALADIFZ+15,TAMY/2,-TAMZ/2+50+j*(20));
+    }
+    glPopMatrix();
     //Vidros e pilares esquerda fundo
     glPushMatrix();
     glTranslatef(-TAMX/2+1.5,TAMY/2,-TAMZ/2+1.5);
@@ -1348,7 +1374,120 @@ void desenhaSalaGrande(float tam_x, float tam_z){
     glPopMatrix();
 
     
+    //Objetos
+    //Mesa
+    glPushMatrix();
+    glColor3ub(200,137,40);
+    glTranslatef(tam_x/2-10,0,-tam_z/2+2);
+    glRotatef(90,0,1,0);
+    desenhaMesa(TAMMESAX,TAMMESAY,TAMMESAZ);
+    glPopMatrix();
 
+    //Cadeira
+    glPushMatrix();
+    glColor3ub(200,120,115);
+    glTranslatef(tam_x/2-4,0,-tam_z/2-20);
+    desenhaCadeira(10,30,10);
+    glPopMatrix();
+}
+
+void desenhaMesa(float tam_x,float tam_y, float tam_z){
+    
+    glPushMatrix();
+    glTranslatef(1,tam_y/2,1);
+    glScalef(2,tam_y,2);
+    glutSolidCube(1);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(tam_x-1,tam_y/2,1);
+    glScalef(2,tam_y,2);
+    glutSolidCube(1);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(tam_x-1,tam_y/2,tam_z-1);
+    glScalef(2,tam_y,2);
+    glutSolidCube(1);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(1,tam_y/2,tam_z-1);
+    glScalef(2,tam_y,2);
+    glutSolidCube(1);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(tam_x/2,tam_y,tam_z/2);
+    glScalef(tam_x,2,tam_z);
+    glutSolidCube(1);
+    glPopMatrix();
+}
+
+void desenhaCadeira(float tam_x, float tam_y, float tam_z){
+    desenhaMesa(tam_x,tam_y/3,tam_z);
+    glPushMatrix();
+    glTranslatef(0.5,tam_y/2,0.5);
+    glScalef(2,tam_y,2);
+    glutSolidCube(1);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(tam_x-0.5,tam_y/2,0.5);
+    glScalef(2,tam_y,2);
+    glutSolidCube(1);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(tam_x/2,3*tam_y/4-tam_y/12,0.5);
+    glScalef(tam_x,tam_y/3,1);
+    glutSolidCube(1);
+    glPopMatrix();
+}
+
+void desenhaMesaRed(float comp, float altura){
+    glPushMatrix();
+    glColor3ub(195,197,221);
+    glTranslatef(0,altura/2,0);
+    glScalef(2,altura,2);
+    glutSolidCube(1);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(0,altura,0);
+    glScalef(1,0.01,1);
+    glutSolidSphere(comp/2,10,10);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(0,0.5,0);
+    glScalef(2*comp/3,1,1);
+    glutSolidCube(1);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(0,0.5,0);
+    glScalef(1,1,2*comp/3);
+    glutSolidCube(1);
+    glPopMatrix();
+}
+
+void desenhaMesaRed2(float comp, float altura){
+    desenhaMesaRed(comp,altura);
+    glColor3ub(142,141,158);
+    glPushMatrix();
+    glPushMatrix();
+    glTranslatef(0,altura+5,0);
+    glScalef(5*comp/7,10,1);
+    glutSolidCube(1);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(0,altura+5,0);
+    glScalef(1,10,5*comp/7);
+    glutSolidCube(1);
+    glPopMatrix();
+    glPopMatrix();
 }
 
 void salaEstudos(){
@@ -1501,7 +1640,7 @@ void desenhaFundoDir(){
     glPushMatrix();
     glTranslatef(TAMX/2-60,0,-TAMZ/2+0.1);
     glRotatef(-90,0,1,0);
-    desenhaBanheiro(72,60-0.1);
+    desenhaBanheiro(72,60-0.1,2);
     glPopMatrix();
 
     glPushMatrix();
@@ -1516,7 +1655,7 @@ void desenhaOeste(){
     glPushMatrix();
     glTranslatef(-TAMX/2+45.2,0,-TAMZ/7-0.1);
     glScalef(-1,1,1);
-    desenhaBanheiro(45,62);
+    desenhaBanheiro(45,62,1);
     glPopMatrix();
 
     glPushMatrix();
@@ -1527,7 +1666,7 @@ void desenhaOeste(){
 
     glPushMatrix();
     glTranslatef(-TAMX/2+TAMX/6-30,0,-TAMZ/7-0.1);
-    desenhaBanheiro(45,62);
+    desenhaBanheiro(45,62,0);
     glPopMatrix();
 
     //Salas Oeste
@@ -1680,30 +1819,33 @@ void salaDif(float tam_x, float tam_z){
 
 void desenhaMeio(){
     //Salas Meio
-    desenhaSalaInterna(45,40,XJARDIM+TAMXJARDIM-25,ZJARDIM-TAMZJARDIM-95);
-    desenhaSalaInterna(45,40,XJARDIM+TAMXJARDIM-70.1,ZJARDIM-TAMZJARDIM-95);
-    desenhaSalaInterna(45,40,XJARDIM+TAMXJARDIM-115.2,ZJARDIM-TAMZJARDIM-95);
-    desenhaSalaInterna(55,40,XJARDIM+TAMXJARDIM-170.3,ZJARDIM-TAMZJARDIM-95);
+    for(int j=0;j<3;j++){
+        desenhaSalaInterna(50,40,-TAMX/2 + TAMX/5+0.01+j*(50.01),ZJARDIM-TAMZJARDIM-95);
+
+    }
+    //desenhaSalaInterna(45,40,XJARDIM+TAMXJARDIM-70.1,ZJARDIM-TAMZJARDIM-95);
+    //desenhaSalaInterna(45,40,XJARDIM+TAMXJARDIM-115.2,ZJARDIM-TAMZJARDIM-95);
+    //desenhaSalaInterna(55,40,XJARDIM+TAMXJARDIM-170.3,ZJARDIM-TAMZJARDIM-95);
 
     //Mureta das salas internas
     glPushMatrix();
     glColor3ub(68,73,30);
-    glTranslatef(-54,TAMY/3+0.5,ZJARDIM-TAMZJARDIM-136);
-    glScalef(190, 1.5, 6);
+    glTranslatef(-75,TAMY/3+0.5,ZJARDIM-TAMZJARDIM-136);
+    glScalef(150, 1.5, 6);
     glutSolidCube(1);
     glPopMatrix();
     
     glPushMatrix();
     glColor3f(0.6,0.6,0.55);
-    glTranslatef(-54,TAMY/6,ZJARDIM-TAMZJARDIM-137);
-    glScalef(190, TAMY/3+0.5, 4);
+    glTranslatef(-75,TAMY/6,ZJARDIM-TAMZJARDIM-137);
+    glScalef(150, TAMY/3+0.5, 4);
     glutSolidCube(1);
     glPopMatrix();
 
     //Pilar colado nas salas internas
     glPushMatrix();
     glColor3ub(68,62,52);
-    glTranslatef(41,TAMY/2,ZJARDIM-TAMZJARDIM-137);
+    glTranslatef(1,TAMY/2,ZJARDIM-TAMZJARDIM-137);
     desenhaPilarInterno(3,TAMY,3.5);
     glPopMatrix();
 
@@ -1806,11 +1948,11 @@ void desenhaJardim(){
     //SALAS AO REDOR DO JARDIM
     //Salas fundo
     for(int i=0;i<2;i++){
-        desenhaSala(TAMSALAINTX, TAMSALAINTZ, XJARDIM-20+i*(TAMSALAINTX+0.01), ZJARDIM -TAMZJARDIM - 17.1);
+        desenhaSala(TAMSALAINTX, TAMSALAINTZ+5, XJARDIM-20+i*(TAMSALAINTX+0.01), ZJARDIM -TAMZJARDIM - 17.1);
     }
-    for(int i=0;i<2;i++){
-        desenhaSala(35.5, TAMSALAINTZ, XJARDIM-20+2*(TAMSALAINTX+0.01)+i*(35.5+0.01), ZJARDIM -TAMZJARDIM - 17.1);
-    }
+
+    desenhaSala(36.5, TAMSALAINTZ+5, XJARDIM-20+2*(TAMSALAINTX+0.01), ZJARDIM -TAMZJARDIM - 17.1);
+    
     
     
     //Salas esquerda
@@ -2274,7 +2416,83 @@ void desenhaSalaInterna(float tam_x_sala, float tam_z_sala, float pos_x_sala, fl
     
 }
 
+void mesaDif(float tam_x, float tam_y, float tam_z){
+    glPushMatrix();
+    glTranslatef(0.25,tam_y/2,0.25);
+    glScalef(0.5,tam_y,0.5);
+    glutSolidCube(1);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(tam_x-0.25,tam_y/2,0.25);
+    glScalef(0.5,tam_y,0.5);
+    glutSolidCube(1);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(tam_x-0.25,tam_y/2,tam_z-0.25);
+    glScalef(0.5,tam_y,0.5);
+    glutSolidCube(1);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(0.25,tam_y/2,tam_z-0.25);
+    glScalef(0.5,tam_y,0.5);
+    glutSolidCube(1);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(tam_x/2,tam_y,tam_z/2);
+    glScalef(tam_x,1,tam_z);
+    glutSolidCube(1);
+    glPopMatrix();
+}
+
+void corPretoAzul(){
+    glColor3ub(47,49,59);
+}
+
+void desenhaSofa(){
+    float tamx=10,tamy=28,tamz=60;
+    corPretoAzul();
+    glPushMatrix();
+    glTranslatef(0,tamy/2,0);
+    desenhaPilarInterno(2.5,tamy,tamz);
+    glTranslatef(tamx/2,-tamy/4,0);
+    desenhaPilarInterno(tamx,tamy/2,tamz);
+    glPopMatrix();
+
+    //Almofadas
+    glPushMatrix();
+    glColor3ub(112,64,61);
+    glTranslatef(tamx/2,tamy/2,0);
+    desenhaPilarInterno(3*tamx/4,2,tamz-4);
+    glPopMatrix();
+}
+
 void desenhaObjetos(){
+
+    //Sofá esquerda
+    glPushMatrix();
+    glTranslatef(-TAMX/8-2,0,TAMZ/2-34);
+    glRotatef(180,0,1,0);
+    desenhaSofa();
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(-TAMX/8-35,0,TAMZ/2-34);
+    desenhaSofa();
+    glRotatef(180,0,1,0);
+    desenhaSofa();
+    glPopMatrix();
+
+    //Mesas esquerda
+    glPushMatrix();
+    glColor3ub(23,22,18);
+    glTranslatef(-TAMX/8 -80,0,TAMZ/2-70);
+    mesaDif(12,TAMMESAY+3,45);
+    glPopMatrix();
+
     //Prateleiras entrada
     for(int i=0;i<4;i++){
         glPushMatrix();
@@ -2297,20 +2515,71 @@ void desenhaObjetos(){
         glPopMatrix();
     }
 
+    //Mesas meio
+    glPushMatrix();
+    glTranslatef(XJARDIM+TAMXJARDIM+45,0,ZJARDIM-TAMZJARDIM/2+30);
+    for(int j=0;j<3;j++){
+        if(j==1){
+            glRotatef(45,0,1,0);
+            desenhaMesaRed(30,18);
+            glRotatef(-45,0,1,0);
+            glTranslatef(0,0,-60);
+        }
+        else{
+            desenhaMesaRed(30,18);
+            glTranslatef(0,0,-60);
+        }
+    }
+    glPopMatrix();
+
     //Prateleiras fundo
     for(int i=0;i<13;i++){
         glPushMatrix();
         glTranslatef(-TAMX/2 + 50 + i*(30), 0,-TAMZ/2 + 110);
         glRotatef(90,0,1,0);
-        desenhaPrateleira(45, 4*TAMY/5, 10);
+        desenhaPrateleira(36, 4*TAMY/5, 10);
         glPopMatrix();
     
         glPushMatrix();
-        glTranslatef(-TAMX/2 + 50 + i*(30), 0,-TAMZ/2 + 64);
+        glTranslatef(-TAMX/2 + 50 + i*(30), 0,-TAMZ/2 + 73);
         glRotatef(90,0,1,0);
-        desenhaPrateleira(45, 4*TAMY/5, 10);
+        desenhaPrateleira(36, 4*TAMY/5, 10);
         glPopMatrix();
     }
+
+    //Mesas meio/fundo
+    glPushMatrix();
+    glTranslatef(-10,0,-155);
+    for(int j=0;j<3;j++){
+        if(j==1){
+            glRotatef(45,0,1,0);
+            desenhaMesaRed2(30,18);
+            glRotatef(-45,0,1,0);
+            glTranslatef(-50,0,0);
+        }
+        else{
+            desenhaMesaRed2(30,18);
+            glTranslatef(-50,0,0);
+        }
+    }
+    glPopMatrix();
+
+    //Mesas fundo
+    glPushMatrix();
+    glTranslatef(-10,0,-155);
+    for(int j=0;j<3;j++){
+        if(j==1){
+            glRotatef(45,0,1,0);
+            desenhaMesaRed2(30,18);
+            glRotatef(-45,0,1,0);
+            glTranslatef(-50,0,0);
+        }
+        else{
+            desenhaMesaRed2(30,18);
+            glTranslatef(-50,0,0);
+        }
+    }
+    glPopMatrix();
 }
 
 void desenharCena ()
@@ -2329,6 +2598,39 @@ void desenharCena ()
 
 }
 
+void corPreto(){
+    glColor3ub(15,11,10);
+}
+
+void corMadeira(){
+    glColor3ub(130,86,27);
+}
+
+void desenhaMesinhas(){
+    float tamy=20.5;
+    glPushMatrix();
+    corPreto();
+    glTranslatef(0,tamy/2,0);
+    desenhaPilarInterno(0.5,tamy,0.5);
+    glTranslatef(0,-tamy/2+0.5,0);
+    desenhaPilarInterno(15,1,0.5);
+    desenhaPilarInterno(0.5,1,15);
+    corMadeira();
+    glTranslatef(0,tamy,0);
+    desenhaPilarInterno(20,1,20);
+    glPopMatrix();
+}
+
+void desenhaPuff(){
+    glPushMatrix();
+    float tamx=10,tamy=13,tamz=10;
+    glColor3ub(47,42,61);
+    glTranslatef(0,tamy/2,0);
+    glScalef(tamx,tamy,tamz);
+    glutSolidCube(1);
+    glPopMatrix();
+}
+
 void desenhaEntrada(){
     glPushMatrix();
     glColor3f(0.8,0.8,0.8);
@@ -2341,7 +2643,7 @@ void desenhaEntrada(){
     glPopMatrix();
     
     glPushMatrix();
-    glColor3f(0.8,0.8,0.8);
+    glColor3ub(57,62,71);
     glBegin(GL_QUADS);
         glVertex3f(XPORTA, 0, TAMZ/2 - TAMZ/12 - 15);
         glVertex3f(XPORTA, TAMY, TAMZ/2 - TAMZ/12 - 15);
@@ -2350,6 +2652,31 @@ void desenhaEntrada(){
     glEnd();
     glPopMatrix();
 
+    //Detalhes da parede da entrada dentro
+    
+    glPushMatrix();
+    corPilar();
+    glTranslatef(XPORTA-TAMX/8+6, 3*TAMY/4,TAMZ/2 - TAMZ/12 - 15);
+    for(int j=0;j<4;j++){
+        desenhaPilarInterno(114,3,2);
+        glTranslatef(0,-10,0);
+    }
+    glPopMatrix();
+
+    //Mesinhas e puffs
+    glPushMatrix();
+    glTranslatef(XPORTA-10,0,TAMZ/2-TAMZ/12-20);
+    for(int j=0;j<5;j++){
+        desenhaMesinhas();
+        glTranslatef(0,0,-12);
+        desenhaPuff();
+        glTranslatef(0,0,12);
+        glTranslatef(-21,0,0);
+    }
+    glPopMatrix();
+
+
+    //---------------//
     glPushMatrix();
     glColor3f(0.8,0.8,0.8);
     glBegin(GL_QUADS);
@@ -2391,19 +2718,19 @@ void desenhaEntrada(){
     glPushMatrix();
     corPilar();
     glTranslatef(XPORTA,TAMY/2,TAMZ/2-TAMZ/12-7.5);
-    desenhaPilarInterno(3,TAMY,12);
+    desenhaPilarInterno(3,TAMY,14.99);
     glPopMatrix();
 
     //Banheiros entrada
     glPushMatrix();
     glTranslatef(XPORTA-0.1,0,TAMZ/2);
     glRotatef(180,0,1,0);
-    desenhaBanheiro(53,74);
+    desenhaBanheiro(53,74,1);
     glPopMatrix();
     glPushMatrix();
     glTranslatef(-TAMX/8+0.1,0,TAMZ/2);
     glScalef(1,1,-1);
-    desenhaBanheiro(60,74);
+    desenhaBanheiro(60,74,0);
     glPopMatrix();
 
     //Mesa entrada
@@ -2433,7 +2760,7 @@ void desenhaEntrada(){
     glPopMatrix();
 }
 
-void desenhaBanheiro(float tam_x, float tam_z){
+void desenhaBanheiro(float tam_x, float tam_z, int flag){
     //Parede esquerda
     glPushMatrix();
     glColor3f(0.82,0.82,0.82);
@@ -2513,6 +2840,21 @@ void desenhaBanheiro(float tam_x, float tam_z){
     glTranslatef(5,0,0);
     porta();
     glPopMatrix();
+
+    if(flag==0){
+        glPushMatrix();
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, texID[2]);
+        glColor3f(1,1,1);
+        glBegin(GL_QUADS);
+            glTexCoord2f(0,0); glVertex3f(11.5,TAMPORTAY-13,0.1);
+            glTexCoord2f(1,0); glVertex3f(17, TAMPORTAY-13,0.1);
+            glTexCoord2f(1,1); glVertex3f(17,TAMPORTAY-6,0.1);
+            glTexCoord2f(0,1); glVertex3f(11.5,TAMPORTAY-6,0.1);
+        glEnd();
+        glDisable(GL_TEXTURE_2D);
+        glPopMatrix();
+    }
 
 }
 
