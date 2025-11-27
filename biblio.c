@@ -289,24 +289,27 @@ void desenhaPrateleira(float tam_x, float tam_y, float tam_z)
     glScalef(1, tam_y, tam_z);
     glutSolidCube(1);
     glPopMatrix();
+    float y = 0.5f + i*9;
 
     // --- PRATELEIRAS + LIVROS ---
     for(int i = 0; 0.5f + i*9 <= tam_y; i++)
     {
-        float y = 0.5f + i*9;
-
-        // prateleira física
+        y = 0.5f + i*9;
         glPushMatrix();
         glColor3ub(198,185,147);
         glTranslatef(tam_x/2 + 0.5f, y, -tam_z/2);
         glScalef(tam_x, 1, tam_z);
         glutSolidCube(1);
         glPopMatrix();
+    }
 
+    for(int i = 0; 0.5f + i*9 <= tam_y-2; i++)
+    {
         // Distribui os livros nas prateleiras
-        float xPos = 1.2f;          // início dentro da prateleira
-        float z = 0.0f;             // centralizado
-        float d = tam_z * 0.8f;     // profundidade do livro
+        float xPos = 1.2f;          
+        float z = 0.0f;           
+        float d = tam_z * 0.8f; 
+        y = 0.5f + i*9;    
 
         int idxTam = 0;
         int idxCor = 0;
@@ -319,9 +322,8 @@ void desenhaPrateleira(float tam_x, float tam_y, float tam_z)
 
             desenhaLivro(xPos, y + 0.5f, z, T.w, T.h, d, C);
 
-            xPos += T.w + 0.1f;  // pequeno espaço entre livros
+            xPos += T.w + 0.1f; 
 
-            // avanço circular
             idxTam = (idxTam + 1) % 5;
             idxCor = (idxCor + 1) % 10;
         }
