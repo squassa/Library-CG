@@ -120,7 +120,7 @@ void desenhaLivro(float x, float y, float z, float w, float h, float d, Color c)
 
 //Declaração de Variáveis Globis
 int projecao=0; //Variável Lógica para Definir o Tipo de Projeção (Perspectiva ou Ortogonal)
-float posx=XPORTA+TAMPORTAX/2, posy=30, posz=TAMZ/2+40; //Variáveis que definem a posição da câmera
+float posx=XPORTA+TAMPORTAX/2, posy=30, posz=TAMZ/2+120; //Variáveis que definem a posição da câmera
 float oy=30,ox=0,oz=0;         //Variáveis que definem para onde a câmera olha
 int lx=0, ly=1,  lz=0;     //Variáveis que definem o eixo da câmera
 
@@ -141,7 +141,8 @@ const char *textures[] = {
     "chao-fora.jpeg",
     "banheiro.png",
     "cadeirante.png",
-    "mona.jpeg"
+    "mona.jpeg",
+    "giz.jpg"
 };
 
 
@@ -186,8 +187,8 @@ void loadTexture(const char *filename, GLuint texID) {
 
 
 void initTextures() {
-    glGenTextures(5, texID); //gera IDs �nicas para texturas no OpenGL.
-    for (int i = 0; i < 5; i++) {
+    glGenTextures(6, texID); //gera IDs �nicas para texturas no OpenGL.
+    for (int i = 0; i < 6; i++) {
         loadTexture(textures[i], texID[i]);
     }
 }
@@ -1575,6 +1576,21 @@ void desenhaMesaRed2(float comp, float altura){
 
 void salaEstudos(){
     //Sala de estudos
+    
+    //Parede de giz
+    glPushMatrix();
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, texID[5]);
+    glColor3f(1.0,1.0,1.0);
+    glBegin(GL_QUADS);
+        glTexCoord2f(0,1); glVertex3f(TAMX/2-TAMSALAGRZ-1,5,TAMZ/2);
+        glTexCoord2f(0,0); glVertex3f(TAMX/2-TAMSALAGRZ-1, 5, TAMZ/2-TAMZ/8-35+TAMSALAGRX);
+        glTexCoord2f(1,0); glVertex3f(TAMX/2-TAMSALAGRZ-1, 3*TAMY/4, TAMZ/2-TAMZ/8-35+TAMSALAGRX);
+        glTexCoord2f(1,1); glVertex3f(TAMX/2-TAMSALAGRZ-1, 3*TAMY/4, TAMZ/2);
+    glEnd();
+    glDisable(GL_TEXTURE_2D);
+    glPopMatrix();
+
     //Frente
     glPushMatrix();
     glColor3ub(156,149,142);
