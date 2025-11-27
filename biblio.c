@@ -82,7 +82,7 @@ Color cores[10] = {
     {0.3f, 0.6f, 0.9f},
     {0.9f, 0.3f, 0.5f}
 };
-
+void desenhaPuff();
 void desenhaEntrada();
 void desenhaLeste();
 void desenhaPrateleira(float tam_x, float tam_y, float tam_z);
@@ -99,6 +99,7 @@ void desenhaVidros(float xinicio, float xfim, float zinicio, float zfim);
 void janelaFechada(float tam_x, float tam_y);
 void janelaAberta(float tam_x, float tam_y);
 void desenhaObjetos();
+void desenhaQuadro(float tamx, float tamy);
 void desenhaMesa(float tam_x, float tam_y, float tam_z);
 void desenhaCadeira(float tam_x, float tam_y, float tam_z);
 void desenhaMesaEntrada();
@@ -107,8 +108,10 @@ void desenhaMeio();
 void desenhaOeste();
 void desenhaFundoDir();
 void desenhaPredio();
+void desenhaArCond();
 void salaDif(float tam_x,float tam_z);
 void corPilar();
+void corPreto();
 void porta();
 void portaVidro(float tam_x, float tam_y);
 void chaoSala(float tam_x, float tam_z);
@@ -130,14 +133,15 @@ int y_temp=-1; //Armazena posição Y do ponteiro do mouse
 int rotacao = 0; //Controla eixo de rotação do mouse
 int i;//controle do for
 
-GLuint texID[3]; // IDs das texturas
+GLuint texID[4]; // IDs das texturas
 
 
 const char *textures[] = {
     "tijolo.png",
     "chao-fora.jpeg",
     "banheiro.png",
-    "cadeirante.png"
+    "cadeirante.png",
+    "mona.jpeg"
 };
 
 
@@ -182,8 +186,8 @@ void loadTexture(const char *filename, GLuint texID) {
 
 
 void initTextures() {
-    glGenTextures(4, texID); //gera IDs �nicas para texturas no OpenGL.
-    for (int i = 0; i < 4; i++) {
+    glGenTextures(5, texID); //gera IDs �nicas para texturas no OpenGL.
+    for (int i = 0; i < 5; i++) {
         loadTexture(textures[i], texID[i]);
     }
 }
@@ -1307,6 +1311,14 @@ void chaoSala(float tam_x, float tam_z){
 }
 
 void desenhaSalaGrande(float tam_x, float tam_z){
+    //Quadro
+    glPushMatrix();
+    glTranslatef(0.1,TAMY/2-3,-tam_z/2);
+    glRotatef(90,0,1,0);
+    desenhaQuadro(9,12);
+    glPopMatrix();
+    
+    
     //Chao
     glPushMatrix();
     glTranslatef(0,0.11,0);
@@ -1684,7 +1696,73 @@ void salaEstudos(){
             glPopMatrix();
         }
     }
+
+    glPushMatrix();
+    glTranslatef(TAMX/2-TAMSALAGRZ/2-10,0,TAMZ/2-30);
+    mesaDif(25,20,15);
+    glPopMatrix();
+
+    //Ar condicionado
+    
+    glPushMatrix();
+    glTranslatef(TAMX/2-TAMSALAGRZ/2-10,3*TAMY/4,TAMZ/2-55);
+    desenhaArCond();
+    glPopMatrix();
 }
+
+void desenhaArCond(){
+    glPushMatrix();
+    glColor3ub(180,180,180);
+    desenhaPilarInterno(25,7,5);
+    corPreto();
+    glTranslatef(0,-1,0);
+    desenhaPilarInterno(17,1.5,5.5);
+    glPopMatrix();
+}
+
+void desenhaArmario(float tam_x, float tam_y, float tam_z, int cols, int rows)
+{
+    float gap = 0.1f;
+    float cellW = (tam_x - (cols+1)*gap) / cols;
+    float cellH = (tam_y - (rows+1)*gap) / rows;
+    int i, j;
+
+    glPushMatrix();
+    glColor3f(0.6,0.3,0);
+    glTranslatef(0, tam_y/2, -tam_z/2);
+    glScalef(1, tam_y, tam_z);
+    glutSolidCube(1);
+    glPopMatrix();
+
+    glPushMatrix();
+    glColor3f(0.6,0.3,0);
+    glTranslatef(tam_x + 1, tam_y/2, -tam_z/2);
+    glScalef(1, tam_y, tam_z);
+    glutSolidCube(1);
+    glPopMatrix();
+
+    for(i=0; i<=rows; i++)
+    {
+        glPushMatrix();
+        glColor3f(0.8,0.6,0.3);
+        glTranslatef(tam_x/2 + 0.5f, gap + i*(cellH+gap), -tam_z/2);
+        glScalef(tam_x, 1, tam_z);
+        glutSolidCube(1);
+        glPopMatrix();
+    }
+
+    for(j=0; j<=cols; j++){
+        glPushMatrix();
+        glColor3f(0.8,0.6,0.3);
+        glTranslatef(gap + j*(cellW+gap), tam_y/2, -tam_z/2);
+        glScalef(1, tam_y, tam_z);
+        glutSolidCube(1);
+        glPopMatrix();
+    }
+}
+ 
+
+
 
 void desenhaLeste(){
 
@@ -1776,6 +1854,21 @@ void portaVidro(float tam_x, float tam_y){
 
 
 void salaDif(float tam_x, float tam_z){
+    //Ar cond
+    glPushMatrix();
+    glTranslatef(tam_x-2.9,3*TAMY/4,-tam_z/2);
+    glRotatef(90,0,1,0);
+    desenhaArCond();
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(tam_x/2-10,0,-tam_z/2-10);
+    desenhaMesa(25,20,17);
+    glTranslatef(8,0,-10);
+    glColor3ub(153,156,105);
+    desenhaCadeira(12,23,13);
+    glPopMatrix();
+
 
     //Chao
     glPushMatrix();
@@ -2572,6 +2665,36 @@ void desenhaSofa(){
 
 void desenhaObjetos(){
 
+    //Ar salas direita
+    glPushMatrix();
+    glTranslatef(TAMX/2-TAMSALAGRZ/2-10,3*TAMY/4,TAMZ/2-55-2*TAMSALAGRX);
+    desenhaArCond();
+    glPopMatrix();
+
+    //Ar salas esquerda
+    glPushMatrix();
+    glTranslatef(-TAMX/2-TAMSALAGRZ+10+TAMSALAGRZ/2+10,3*TAMY/4,TAMZ/2-20-2*TAMSALAGRX);
+    desenhaArCond();
+    glTranslatef(0,0,-2*TAMSALAGRZ+10);
+    desenhaArCond();
+    glTranslatef(0,0,2*TAMSALAGRZ+10);
+    glTranslatef(0,0,2*TAMSALAGRZ-33);
+    desenhaArCond();
+    glPopMatrix();
+
+
+    //Porta mochila
+    glPushMatrix();
+    glTranslatef(-5,0,260);
+    desenhaArmario(42, 50, 10, 4, 3);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(-50,0,260);
+    desenhaArmario(42, 50, 10, 4, 3);
+    glPopMatrix();
+
+
     //Sofá esquerda
     glPushMatrix();
     glTranslatef(-TAMX/8-2,0,TAMZ/2-34);
@@ -2586,11 +2709,24 @@ void desenhaObjetos(){
     desenhaSofa();
     glPopMatrix();
 
-    //Mesas esquerda
+    //Mesa e cadeiras esquerda
     glPushMatrix();
     glColor3ub(23,22,18);
     glTranslatef(-TAMX/8 -80,0,TAMZ/2-70);
     mesaDif(12,TAMMESAY+3,45);
+    glPopMatrix();
+
+    glPushMatrix();
+    glColor3ub(255,255,130);
+    glTranslatef(-TAMX/8 -105,0,TAMZ/2-65);
+    desenhaPuff();
+    glTranslatef(0,0,20);
+    glColor3ub(108,17,22);
+    desenhaPuff();
+    glTranslatef(0,0,20);
+    glRotatef(35,0,1,0);
+    glColor3ub(6,17,45);
+    desenhaPuff();
     glPopMatrix();
 
     //Prateleiras entrada
@@ -2680,6 +2816,65 @@ void desenhaObjetos(){
         }
     }
     glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(-10,0,-TAMZ/2+16);
+    for(int j=0;j<5;j++){
+        if(j==1){
+            glRotatef(45,0,1,0);
+            desenhaMesaRed2(26,18);
+            glRotatef(-45,0,1,0);
+            glTranslatef(-50,0,0);
+        }
+        else{
+            desenhaMesaRed2(26,18);
+            glTranslatef(-50,0,0);
+        }
+    }
+    glPopMatrix();
+}
+
+void desenhaQuadro(float tamx, float tamy){
+    glPushMatrix();
+    corPreto();
+    glTranslatef(tamx/2,0.25,0.1);
+    glScalef(tamx-0.5,0.5,0.2);
+    glutSolidCube(1);
+    glPopMatrix();
+
+    glPushMatrix();
+    corPreto();
+    glTranslatef(tamx/2,tamy,0.1);
+    glScalef(tamx-0.5,0.5,0.2);
+    glutSolidCube(1);
+    glPopMatrix();
+
+    glPushMatrix();
+    corPreto();
+    glTranslatef(0.25,tamy/2,0.1);
+    glScalef(0.5,tamy,0.2);
+    glutSolidCube(1);
+    glPopMatrix();
+
+    glPushMatrix();
+    corPreto();
+    glTranslatef(tamx-0.5,tamy/2,0.1);
+    glScalef(0.5,tamy,0.2);
+    glutSolidCube(1);
+    glPopMatrix();
+    
+    glPushMatrix();
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, texID[4]);
+        glColor3f(1,1,1);
+        glBegin(GL_QUADS);
+            glTexCoord2f(0,0); glVertex3f(0.5,0.25,0.1);
+            glTexCoord2f(1,0); glVertex3f(tamx-0.5, 0.25,0.1);
+            glTexCoord2f(1,1); glVertex3f(tamx-0.5, tamy-0.25,0.1);
+            glTexCoord2f(0,1); glVertex3f(0.5, tamy-0.25,0.1);
+        glEnd();
+        glDisable(GL_TEXTURE_2D);
+        glPopMatrix();
 }
 
 void desenharCena ()
@@ -2721,10 +2916,13 @@ void desenhaMesinhas(){
     glPopMatrix();
 }
 
+void corPuff(){
+    glColor3ub(47,42,61);
+}
+
 void desenhaPuff(){
     glPushMatrix();
     float tamx=10,tamy=13,tamz=10;
-    glColor3ub(47,42,61);
     glTranslatef(0,tamy/2,0);
     glScalef(tamx,tamy,tamz);
     glutSolidCube(1);
@@ -2765,10 +2963,12 @@ void desenhaEntrada(){
 
     //Mesinhas e puffs
     glPushMatrix();
+    
     glTranslatef(XPORTA-10,0,TAMZ/2-TAMZ/12-20);
     for(int j=0;j<5;j++){
         desenhaMesinhas();
         glTranslatef(0,0,-12);
+        corPuff();
         desenhaPuff();
         glTranslatef(0,0,12);
         glTranslatef(-21,0,0);
