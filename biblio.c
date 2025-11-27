@@ -50,11 +50,42 @@
 #define TAMMESAX 15
 #define TAMMESAZ 25
 
+// ----- Estruturas para criar os livros nas prateleiras ----------------------------
 
+typedef struct {
+    float r, g, b;
+} Color;
+
+typedef struct {
+    float w, h;
+} TamLivro;
+
+// --- Tamanho fixos dos livros ---
+TamLivro tamanhos[5] = {
+    {0.7f, 5.5f},
+    {0.9f, 6.1f},
+    {0.6f, 5.0f},
+    {0.8f, 5.8f},
+    {0.75f, 6.3f}
+};
+
+// --- Cores fixas dos livros ---
+Color cores[10] = {
+    {0.8f, 0.2f, 0.2f},
+    {0.2f, 0.3f, 0.8f},
+    {0.9f, 0.8f, 0.1f},
+    {0.1f, 0.7f, 0.3f},
+    {0.6f, 0.2f, 0.7f},
+    {0.7f, 0.5f, 0.1f},
+    {0.2f, 0.8f, 0.6f},
+    {0.8f, 0.4f, 0.2f},
+    {0.3f, 0.6f, 0.9f},
+    {0.9f, 0.3f, 0.5f}
+};
 
 void desenhaEntrada();
 void desenhaLeste();
-void desenhaPrateleira(float x, float y, float z);
+void desenhaPrateleira(float tam_x, float tam_y, float tam_z);
 void desenhaPilar(float ang, float x, float y, float z);
 void desenhaPilarInterno(float tamx, float tamy, float tamz);
 void desenharCena();
@@ -82,6 +113,7 @@ void porta();
 void portaVidro(float tam_x, float tam_y);
 void chaoSala(float tam_x, float tam_z);
 void mesaDif(float tam_x, float tam_y, float tam_z);
+void desenhaLivro(float x, float y, float z, float w, float h, float d, Color c);
 
 //Declaração de Variáveis Globis
 int projecao=0; //Variável Lógica para Definir o Tipo de Projeção (Perspectiva ou Ortogonal)
@@ -225,32 +257,70 @@ void corPilar(){
     glColor3ub(105,107,98);
 }
 
-void desenhaPrateleira(float tam_x, float tam_y, float tam_z)
+void desenhaLivro(float x, float y, float z, float w, float h, float d, Color c)
 {
     glPushMatrix();
-    glColor3f(0.6,0.3,0);
+    glColor3f(c.r, c.g, c.b);
+    glTranslatef(x + w/2, y + h/2, z - d/2);
+    glScalef(w, h, d);
+    glutSolidCube(1);
+    glPopMatrix();
+}
+
+
+void desenhaPrateleira(float tam_x, float tam_y, float tam_z)
+{
+    // --- LADOS ---
+    glPushMatrix();
+    glColor3f(0.6f,0.3f,0.0f);
     glTranslatef(0, tam_y/2, -tam_z/2);
     glScalef(1, tam_y, tam_z);
     glutSolidCube(1);
     glPopMatrix();
 
-    for(int i=0;0.5 + i*(9)<=tam_y;i++){
-        glPushMatrix();
-        glColor3ub(198,185,147);
-        glTranslatef(tam_x/2+0.5, 0.5 + i*(9), -tam_z/2);
-        glScalef(tam_x, 1, tam_z);
-        glutSolidCube(1);
-        glPopMatrix();
-
-    }
-
     glPushMatrix();
-    glColor3f(0.6,0.3,0);
-    glTranslatef(tam_x +1, tam_y/2, -tam_z/2);
+    glColor3f(0.6f,0.3f,0.0f);
+    glTranslatef(tam_x + 1, tam_y/2, -tam_z/2);
     glScalef(1, tam_y, tam_z);
     glutSolidCube(1);
     glPopMatrix();
 
+    // --- PRATELEIRAS + LIVROS ---
+    for(int i = 0; 0.5f + i*9 <= tam_y; i++)
+    {
+        float y = 0.5f + i*9;
+
+        // prateleira física
+        glPushMatrix();
+        glColor3ub(198,185,147);
+        glTranslatef(tam_x/2 + 0.5f, y, -tam_z/2);
+        glScalef(tam_x, 1, tam_z);
+        glutSolidCube(1);
+        glPopMatrix();
+
+        // Distribui os livros nas prateleiras
+        float xPos = 1.2f;          // início dentro da prateleira
+        float z = 0.0f;             // centralizado
+        float d = tam_z * 0.8f;     // profundidade do livro
+
+        int idxTam = 0;
+        int idxCor = 0;
+
+        // preencher até o final da prateleira
+        while (xPos < tam_x - 1.5f)
+        {
+            TamLivro T = tamanhos[idxTam];
+            Color C = cores[idxCor];
+
+            desenhaLivro(xPos, y + 0.5f, z, T.w, T.h, d, C);
+
+            xPos += T.w + 0.1f;  // pequeno espaço entre livros
+
+            // avanço circular
+            idxTam = (idxTam + 1) % 5;
+            idxCor = (idxCor + 1) % 10;
+        }
+    }
 }
 
 void desenhaPilar(float ang, float x, float y, float z){
