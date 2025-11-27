@@ -104,7 +104,8 @@ GLuint texID[3]; // IDs das texturas
 const char *textures[] = {
     "tijolo.png",
     "chao-fora.jpeg",
-    "banheiro.png"
+    "banheiro.png",
+    "cadeirante.png"
 };
 
 
@@ -149,8 +150,8 @@ void loadTexture(const char *filename, GLuint texID) {
 
 
 void initTextures() {
-    glGenTextures(2, texID); //gera IDs �nicas para texturas no OpenGL.
-    for (int i = 0; i < 2; i++) {
+    glGenTextures(4, texID); //gera IDs �nicas para texturas no OpenGL.
+    for (int i = 0; i < 4; i++) {
         loadTexture(textures[i], texID[i]);
     }
 }
@@ -1976,6 +1977,7 @@ void desenhaJardim(){
 }
 
 void desenhaSala(float tam_x_sala, float tam_z_sala, float pos_x_sala, float pos_z_sala){
+
     //Parede direita
     glPushMatrix();
     glColor3f(0.8,0.75,0.75);
@@ -2224,6 +2226,20 @@ void desenhaSala(float tam_x_sala, float tam_z_sala, float pos_x_sala, float pos
     glEnd();
     glPopMatrix();
 
+    //Mesa e cadeira dentro da sala
+    glPushMatrix();
+    glColor3ub(139,69,19);
+    glTranslatef(pos_x_sala + tam_x_sala/2,0,pos_z_sala - tam_z_sala/2);
+    desenhaMesaRed(25,TAMMESAY-1);
+    glColor3ub(150,75,30);
+    glTranslatef(5,0,16);
+    glRotatef(180,0,1,0);
+    desenhaCadeira(13,TAMMESAY+5,10);
+    glPopMatrix();
+
+    
+    
+
 }
 
 void desenhaSalaInterna(float tam_x_sala, float tam_z_sala, float pos_x_sala, float pos_z_sala){
@@ -2412,6 +2428,20 @@ void desenhaSalaInterna(float tam_x_sala, float tam_z_sala, float pos_x_sala, fl
     glPushMatrix();
     glTranslatef(pos_x_sala+tam_x_sala/2,11*TAMY/15 +1,pos_z_sala-tam_z_sala);
     janelaFechada(tam_x_sala/2, 4*TAMY/15);
+    glPopMatrix();
+
+    //Mesa dentro da sala
+    glPushMatrix();
+    glColor3ub(139,69,19);
+    glTranslatef(pos_x_sala + tam_x_sala/2,0,pos_z_sala - tam_z_sala/2);
+    desenhaMesaRed(25,TAMMESAY-1);
+    glColor3ub(150,75,30);
+    glTranslatef(-5,0,-16);
+    desenhaCadeira(13,TAMMESAY+5,10);
+    glTranslatef(5,0,16);
+    glTranslatef(5,0,16);
+    glRotatef(180,0,1,0);
+    desenhaCadeira(13,TAMMESAY+5,10);
     glPopMatrix();
     
 }
@@ -2847,13 +2877,43 @@ void desenhaBanheiro(float tam_x, float tam_z, int flag){
         glBindTexture(GL_TEXTURE_2D, texID[2]);
         glColor3f(1,1,1);
         glBegin(GL_QUADS);
-            glTexCoord2f(0,0); glVertex3f(11.5,TAMPORTAY-13,0.1);
-            glTexCoord2f(1,0); glVertex3f(17, TAMPORTAY-13,0.1);
-            glTexCoord2f(1,1); glVertex3f(17,TAMPORTAY-6,0.1);
-            glTexCoord2f(0,1); glVertex3f(11.5,TAMPORTAY-6,0.1);
+            glTexCoord2f(0.5,0); glVertex3f(12.5,TAMPORTAY-13,0.2);
+            glTexCoord2f(0,0); glVertex3f(17.5, TAMPORTAY-13,0.2);
+            glTexCoord2f(0,1); glVertex3f(17.5,TAMPORTAY-6,0.2);
+            glTexCoord2f(0.5,1); glVertex3f(12.5,TAMPORTAY-6,0.2);
         glEnd();
         glDisable(GL_TEXTURE_2D);
         glPopMatrix();
+    }
+    else{
+        if(flag==1){
+            glPushMatrix();
+            glEnable(GL_TEXTURE_2D);
+            glBindTexture(GL_TEXTURE_2D, texID[2]);
+            glColor3f(1,1,1);
+            glBegin(GL_QUADS);
+                glTexCoord2f(0.5,0); glVertex3f(12.5,TAMPORTAY-13,0.2);
+                glTexCoord2f(1,0); glVertex3f(17.5, TAMPORTAY-13,0.2);
+                glTexCoord2f(1,1); glVertex3f(17.5,TAMPORTAY-6,0.2);
+                glTexCoord2f(0.5,1); glVertex3f(12.5,TAMPORTAY-6,0.2);
+            glEnd();
+            glDisable(GL_TEXTURE_2D);
+            glPopMatrix();
+        }
+        else{
+            glPushMatrix();
+                glEnable(GL_TEXTURE_2D);
+                glBindTexture(GL_TEXTURE_2D, texID[3]);
+                glColor3f(1,1,1);
+                glBegin(GL_QUADS);
+                    glTexCoord2f(0,0); glVertex3f(12.5,TAMPORTAY-13,0.2);
+                    glTexCoord2f(1,0); glVertex3f(17.5, TAMPORTAY-13,0.2);
+                    glTexCoord2f(1,1); glVertex3f(17.5,TAMPORTAY-6,0.2);
+                    glTexCoord2f(0,1); glVertex3f(12.5,TAMPORTAY-6,0.2);
+                glEnd();
+                glDisable(GL_TEXTURE_2D);
+                glPopMatrix();
+        }
     }
 
 }
